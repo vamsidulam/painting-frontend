@@ -1,5 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Home, Building2, Briefcase, Wrench,
@@ -14,18 +14,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
 
-export const Route = createFileRoute("/booking")({
-  head: () => ({
-    meta: [
-      { title: "Book a Painter — Brushly" },
-      { name: "description", content: "Book professional painters in 60 seconds. Get an instant quote and pick your date." },
-      { property: "og:title", content: "Book a Painter — Brushly" },
-      { property: "og:description", content: "Book professional painters in 60 seconds." },
-    ],
-  }),
-  component: BookingPage,
-});
-
 const services = [
   { id: "interior", label: "Interior", icon: Home, base: 3 },
   { id: "exterior", label: "Exterior", icon: Building2, base: 5 },
@@ -39,7 +27,11 @@ const properties = [
   { id: "office", label: "Office", icon: Store },
 ];
 
-function BookingPage() {
+export default function BookingPage() {
+  useEffect(() => {
+    document.title = "Book a Painter — Brushly";
+  }, []);
+
   const [step, setStep] = useState(0);
   const [service, setService] = useState<string | null>(null);
   const [property, setProperty] = useState<string | null>(null);

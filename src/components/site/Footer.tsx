@@ -1,5 +1,5 @@
 import { PaintBucket, Instagram, Twitter, Facebook } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 
 export function Footer() {
   return (

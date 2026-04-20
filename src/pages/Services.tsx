@@ -1,21 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Home, Building2, Briefcase, Wrench, Check, ArrowRight } from "lucide-react";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 import { Button } from "@/components/ui/button";
-
-export const Route = createFileRoute("/services")({
-  head: () => ({
-    meta: [
-      { title: "Services — Brushly" },
-      { name: "description", content: "Interior, exterior, commercial painting and wall repair — premium services with transparent pricing." },
-      { property: "og:title", content: "Services — Brushly" },
-      { property: "og:description", content: "Interior, exterior, commercial painting and wall repair." },
-    ],
-  }),
-  component: ServicesPage,
-});
 
 const services = [
   {
@@ -52,7 +41,11 @@ const services = [
   },
 ];
 
-function ServicesPage() {
+export default function ServicesPage() {
+  useEffect(() => {
+    document.title = "Services — Brushly";
+  }, []);
+
   return (
     <main>
       <Navbar />

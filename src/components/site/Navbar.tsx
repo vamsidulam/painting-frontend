@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Menu, X, PaintBucket } from "lucide-react";
 import { Button } from "@/components/ui/button";

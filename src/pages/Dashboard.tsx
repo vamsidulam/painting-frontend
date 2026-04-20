@@ -1,23 +1,11 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard, ListOrdered, Users, Settings, BarChart3,
   TrendingUp, Briefcase, DollarSign, PaintBucket, Bell, Search,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-
-export const Route = createFileRoute("/dashboard")({
-  head: () => ({
-    meta: [
-      { title: "Dashboard — Brushly" },
-      { name: "description", content: "Manage orders, jobs and revenue from your Brushly dashboard." },
-      { property: "og:title", content: "Dashboard — Brushly" },
-      { property: "og:description", content: "Manage orders, jobs and revenue." },
-    ],
-  }),
-  component: DashboardPage,
-});
 
 const stats = [
   { label: "Total Orders", value: 1284, prefix: "", icon: ListOrdered, color: "from-primary to-primary-glow", trend: "+12%" },
@@ -59,10 +47,13 @@ function Counter({ to, prefix = "" }: { to: number; prefix?: string }) {
   return <>{prefix}{n.toLocaleString()}</>;
 }
 
-function DashboardPage() {
+export default function DashboardPage() {
+  useEffect(() => {
+    document.title = "Dashboard — Brushly";
+  }, []);
+
   return (
     <div className="min-h-screen flex bg-secondary/30">
-      {/* Sidebar */}
       <aside className="hidden md:flex w-64 bg-sidebar text-sidebar-foreground flex-col p-6 sticky top-0 h-screen">
         <Link to="/" className="flex items-center gap-2">
           <div className="h-10 w-10 rounded-xl gradient-accent flex items-center justify-center">
@@ -105,7 +96,6 @@ function DashboardPage() {
         </div>
       </aside>
 
-      {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="sticky top-0 z-20 glass border-b border-border px-4 md:px-8 py-4 flex items-center justify-between gap-4">
           <div className="flex-1 max-w-md">
