@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import App from "@/App";
 
-// All routing is handled by react-router-dom inside src/App.tsx.
-// This file exists only to satisfy the TanStack Router file-based routing bootstrap.
 export const Route = createFileRoute("/")({
-  component: () => null,
+  component: App,
 });

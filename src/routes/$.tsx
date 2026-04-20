@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
+import App from "@/App";
 
-// Splat route: every non-root path falls through to the React Router app
-// rendered by __root.tsx (App is mounted as the root component).
+// Splat route: every non-root URL renders the React Router-powered App,
+// which then matches the path internally via react-router-dom.
 export const Route = createFileRoute("/$")({
-  component: () => null,
+  component: App,
 });
