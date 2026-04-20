@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Home, Building2, Briefcase, Wrench, ArrowUpRight } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 
 const services = [
   {
