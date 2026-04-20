@@ -11,7 +11,7 @@ import { Footer } from "@/components/site/Footer";
 
 export default function HomePage() {
   useEffect(() => {
-    document.title = "Brushly — Book Professional Painters Near You";
+    document.title = "Brushly";
   }, []);
 
   return (
