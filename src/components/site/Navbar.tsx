@@ -4,10 +4,11 @@ import { Menu, X, PaintBucket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
+  {label:"Home",to:'/'},
   { label: "Services", to: "/services" },
-  { label: "How it Works", to: "/#how" },
-  { label: "Projects", to: "/#projects" },
-  { label: "Dashboard", to: "/dashboard" },
+  // { label: "How it Works", to: "/#how" },
+  // { label: "Projects", to: "/#projects" },
+  // { label: "Dashboard", to: "/dashboard" },
 ];
 
 export function Navbar() {
@@ -29,9 +30,7 @@ export function Navbar() {
     >
       <div className="container mx-auto px-4">
         <div
-          className={`flex items-center justify-between rounded-2xl px-4 md:px-6 py-3 transition-all ${
-            scrolled ? "glass shadow-soft" : "bg-transparent"
-          }`}
+          className={`flex items-center justify-between rounded-2xl px-4 md:px-6 py-3 transition-all glass shadow-lg shadow-primary/10 ring-1 ring-black/5`}
         >
           <Link to="/" className="flex items-center gap-2 group">
             <div className="h-9 w-9 rounded-xl gradient-primary flex items-center justify-center shadow-glow group-hover:scale-110 transition-transform">
@@ -55,11 +54,11 @@ export function Navbar() {
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
-            <Link to="/booking">
+            {/* <Link to="/booking">
               <Button variant="ghost" className="rounded-xl">Get Quote</Button>
-            </Link>
+            </Link> */}
             <Link to="/booking">
-              <Button className="rounded-xl gradient-accent text-accent-foreground shadow-accent-glow hover:opacity-95">
+              <Button style={{cursor:'pointer'}} className="  rounded-xl gradient-accent text-accent-foreground shadow-accent-glow hover:opacity-95">
                 Book Now
               </Button>
             </Link>

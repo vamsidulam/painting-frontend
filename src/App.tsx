@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import HomePage from "@/pages/Home";
@@ -7,6 +8,13 @@ import DashboardPage from "@/pages/Dashboard";
 import NotFoundPage from "@/pages/NotFound";
 
 export default function App() {
+  // BrowserRouter reads `document`, which is undefined during SSR.
+  // Defer mount to the client to avoid the server-render crash.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
+
   return (
     <BrowserRouter>
       <Routes>

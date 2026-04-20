@@ -52,9 +52,9 @@ export function Services() {
             <br />
             <span className="text-gradient">in one place.</span>
           </h2>
-          <p className="mt-4 text-muted-foreground text-lg">
+          {/* <p className="mt-4 text-muted-foreground text-lg">
             From a single accent wall to a full home makeover — handled by vetted pros.
-          </p>
+          </p> */}
         </motion.div>
 
         <div className="mt-16 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">

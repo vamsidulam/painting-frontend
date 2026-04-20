@@ -23,7 +23,7 @@ export default function HomePage() {
       <HowItWorks />
       <Projects />
       <Reviews />
-      <CTASection />
+      
       <Footer />
     </main>
   );

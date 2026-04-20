@@ -5,6 +5,7 @@ import { Home, Building2, Briefcase, Wrench, Check, ArrowRight } from "lucide-re
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 import { Button } from "@/components/ui/button";
+import { Services } from "@/components/site/Services";
 
 const services = [
   {
@@ -49,21 +50,21 @@ export default function ServicesPage() {
   return (
     <main>
       <Navbar />
-      <section className="pt-36 pb-20 bg-gradient-to-b from-secondary/40 to-background">
+      {/* <section className="pt-36 pb-20 bg-gradient-to-b from-secondary/40 to-background">
         <div className="container mx-auto px-4 text-center max-w-3xl">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <span className="text-accent font-semibold text-sm uppercase tracking-wider">Services</span>
             <h1 className="mt-3 font-display font-bold text-5xl md:text-6xl text-foreground">
               Painting done <span className="text-gradient">right</span>.
             </h1>
-            <p className="mt-5 text-lg text-muted-foreground">
+             <p className="mt-5 text-lg text-muted-foreground">
               Every service includes vetted professionals, premium paints, and a satisfaction guarantee.
-            </p>
+            </p> 
           </motion.div>
         </div>
-      </section>
+      </section> */}
 
-      <section className="pb-24">
+      {/* <section className="pb-24">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-6">
             {services.map((s, i) => (
@@ -102,7 +103,10 @@ export default function ServicesPage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
+
+<Services/>
+      
       <Footer />
     </main>
   );
