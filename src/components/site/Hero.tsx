@@ -30,11 +30,24 @@ const rotatingWords = [
 export function Hero() {
   const [index, setIndex] = useState(0);
   const [wordIndex, setWordIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile) {
+      setIndex(0);
+      return;
+    }
     const id = setInterval(() => setIndex((i) => (i + 1) % slides.length), 5500);
     return () => clearInterval(id);
-  }, []);
+  }, [isMobile]);
 
   useEffect(() => {
     const id = setInterval(() => setWordIndex((i) => (i + 1) % rotatingWords.length), 2600);
@@ -386,8 +399,8 @@ export function Hero() {
         </motion.div>
       </div>
 
-      {/* Slide indicators */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+      {/* Slide indicators (desktop only) */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 hidden md:flex gap-2 z-10">
         {slides.map((_, i) => (
           <button
             key={i}
