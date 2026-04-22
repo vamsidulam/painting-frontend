@@ -187,7 +187,7 @@ export function Services() {
           </div>
         )}
 
-        <div className="mt-10 text-center">
+        {/* <div className="mt-10 text-center">
           <Button
             type="button"
             variant="outline"
@@ -198,7 +198,7 @@ export function Services() {
           >
             {seeding ? "Seeding…" : "Seed admin"}
           </Button>
-        </div>
+        </div> */}
       </div>
     </section>
   );
