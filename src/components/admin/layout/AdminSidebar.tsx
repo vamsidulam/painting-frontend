@@ -1,6 +1,7 @@
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import {
   Briefcase,
+  FolderKanban,
   LayoutDashboard,
   ListOrdered,
   PaintBucket,
@@ -15,6 +16,7 @@ const navItems = [
   { to: "/admin/orders", label: "Orders", icon: ListOrdered, end: false },
   { to: "/admin/usermanagement", label: "User Management", icon: Users, end: false },
   { to: "/admin/servicemanagement", label: "Services", icon: Briefcase, end: false },
+  { to: "/admin/projectmanagement", label: "Projects", icon: FolderKanban, end: false },
 ];
 
 function initials(name: string) {

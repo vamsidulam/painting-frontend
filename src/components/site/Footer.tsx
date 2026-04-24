@@ -1,23 +1,60 @@
+import { useEffect, useState } from "react";
 import { PaintBucket, Instagram, Twitter, Facebook } from "lucide-react";
 import { Link } from "react-router-dom";
+import { api } from "@/lib/api";
+
+type PublicCategory = {
+  id: string;
+  name: string;
+};
+
+type CategoriesResponse = {
+  success: boolean;
+  data: { categories: PublicCategory[] };
+};
+
+const quickLinks = [
+  { label: "Home", to: "/" },
+  { label: "Services", to: "/services" },
+  { label: "Projects", to: "/projects" },
+  { label: "Reviews", to: "/reviews" },
+  { label: "About", to: "/about" },
+  { label: "Help", to: "/help" },
+];
 
 export function Footer() {
+  const [categories, setCategories] = useState<PublicCategory[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    api<CategoriesResponse>("/services/categories", { auth: false })
+      .then((res) => {
+        if (!cancelled) setCategories(res.data.categories);
+      })
+      .catch(() => {
+        if (!cancelled) setCategories([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <footer className="mt-24 bg-primary text-primary-foreground">
       <div className="container mx-auto px-4 py-16">
         <div className="grid md:grid-cols-4 gap-10">
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2">
+            <Link to="/" className="flex items-center gap-2 w-fit">
               <div className="h-10 w-10 rounded-xl gradient-accent flex items-center justify-center">
                 <PaintBucket className="h-5 w-5 text-accent-foreground" />
               </div>
               <span className="font-display font-bold text-2xl">
                 Brush<span className="text-accent-glow">ly</span>
               </span>
-            </div>
+            </Link>
             <p className="mt-4 max-w-md text-primary-foreground/70 leading-relaxed">
-              Premium painting services on-demand. Trusted professionals, transparent pricing,
-              and finishes that turn heads.
+              Premium painting services on-demand. Trusted professionals,
+              transparent pricing, and finishes that turn heads.
             </p>
             <div className="flex gap-3 mt-6">
               {[Instagram, Twitter, Facebook].map((Icon, i) => (
@@ -35,20 +72,37 @@ export function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Services</h4>
             <ul className="space-y-2 text-primary-foreground/70 text-sm">
-              <li><Link to="/services" className="hover:text-accent">Interior</Link></li>
-              <li><Link to="/services" className="hover:text-accent">Exterior</Link></li>
-              <li><Link to="/services" className="hover:text-accent">Commercial</Link></li>
-              <li><Link to="/services" className="hover:text-accent">Wall Repair</Link></li>
+              {categories.length === 0 ? (
+                <li>
+                  <Link to="/services" className="hover:text-accent">
+                    Browse all
+                  </Link>
+                </li>
+              ) : (
+                categories.map((c) => (
+                  <li key={c.id}>
+                    <Link
+                      to={`/categories/${c.id}`}
+                      className="hover:text-accent"
+                    >
+                      {c.name}
+                    </Link>
+                  </li>
+                ))
+              )}
             </ul>
           </div>
 
           <div>
-            <h4 className="font-semibold mb-4">Company</h4>
+            <h4 className="font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2 text-primary-foreground/70 text-sm">
-              <li><a href="#" className="hover:text-accent">About</a></li>
-              <li><a href="#" className="hover:text-accent">Careers</a></li>
-              <li><a href="#" className="hover:text-accent">Press</a></li>
-              <li><a href="#" className="hover:text-accent">Contact</a></li>
+              {quickLinks.map((q) => (
+                <li key={q.to}>
+                  <Link to={q.to} className="hover:text-accent">
+                    {q.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
@@ -56,8 +110,12 @@ export function Footer() {
         <div className="mt-12 pt-6 border-t border-primary-foreground/10 flex flex-col md:flex-row justify-between gap-4 text-sm text-primary-foreground/60">
           <p>© {new Date().getFullYear()} Brushly. All rights reserved.</p>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-accent">Privacy</a>
-            <a href="#" className="hover:text-accent">Terms</a>
+            <Link to="/help" className="hover:text-accent">
+              Privacy
+            </Link>
+            <Link to="/help" className="hover:text-accent">
+              Terms
+            </Link>
           </div>
         </div>
       </div>

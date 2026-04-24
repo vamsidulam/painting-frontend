@@ -15,7 +15,7 @@ const OPTIONS: { value: PropertyType; label: string; Icon: typeof Building }[] =
 
 export function PropertyStep({ value, onChange }: Props) {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
       {OPTIONS.map((o) => {
         const active = value === o.value;
         return (
@@ -23,18 +23,20 @@ export function PropertyStep({ value, onChange }: Props) {
             key={o.value}
             type="button"
             onClick={() => onChange(o.value)}
-            className={`p-6 rounded-2xl border-2 text-center transition-all hover:-translate-y-1 ${
+            className={`p-4 rounded-xl border-2 text-center transition-all hover:-translate-y-0.5 ${
               active
                 ? "border-primary bg-primary/5 shadow-glow"
                 : "border-border bg-background hover:border-primary/30"
             }`}
           >
             <o.Icon
-              className={`h-10 w-10 mx-auto ${
+              className={`h-8 w-8 mx-auto ${
                 active ? "text-primary" : "text-muted-foreground"
               }`}
             />
-            <div className="mt-3 font-semibold text-foreground">{o.label}</div>
+            <div className="mt-2 font-semibold text-sm text-foreground">
+              {o.label}
+            </div>
           </button>
         );
       })}

@@ -28,7 +28,7 @@ export function HowItWorks() {
       <div className="absolute inset-0 bg-gradient-to-b from-secondary/40 via-background to-background" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-accent/5 blur-3xl" />
 
-      <div className="container relative mx-auto px-4">
+      <div className="container relative mx-auto px-6 md:px-10 lg:px-14 xl:px-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

@@ -1,21 +1,39 @@
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Image as ImageIcon, Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
-import { formatRupees, type BookingService, type ServiceCategory } from "./types";
+import {
+  formatRupees,
+  type BookingService,
+  type ServiceCategory,
+  type WorkType,
+} from "./types";
 
 type Props = {
   category: ServiceCategory;
+  workType: WorkType;
   value: BookingService | null;
   onChange: (service: BookingService) => void;
 };
 
-type ListResponse = {
-  success: boolean;
-  data: { services: BookingService[] };
+type ApiService = {
+  id: string;
+  name: string;
+  cost: number;
+  description: string;
+  image: string;
+  workType: WorkType;
+  category: string;
+  categoryId: string;
+  categoryName: string;
 };
 
-export function ServiceStep({ category, value, onChange }: Props) {
-  const [services, setServices] = useState<BookingService[]>([]);
+type ListResponse = {
+  success: boolean;
+  data: { services: ApiService[] };
+};
+
+export function ServiceStep({ category, workType, value, onChange }: Props) {
+  const [services, setServices] = useState<ApiService[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,7 +42,12 @@ export function ServiceStep({ category, value, onChange }: Props) {
     setLoading(true);
     setError(null);
 
-    api<ListResponse>(`/services?category=${category}`, { auth: false })
+    api<ListResponse>(
+      `/services?categoryId=${encodeURIComponent(
+        category.id,
+      )}&workType=${encodeURIComponent(workType)}`,
+      { auth: false },
+    )
       .then((res) => {
         if (!cancelled) setServices(res.data.services);
       })
@@ -43,7 +66,7 @@ export function ServiceStep({ category, value, onChange }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [category]);
+  }, [category.id, workType]);
 
   if (loading) {
     return (
@@ -63,42 +86,70 @@ export function ServiceStep({ category, value, onChange }: Props) {
 
   if (services.length === 0) {
     return (
-      <div className="text-center py-12 text-muted-foreground">
-        No {category} services available right now.
+      <div className="text-center py-10 text-sm text-muted-foreground">
+        No services available in {category.name} yet.
       </div>
     );
   }
 
   return (
-    <div className="space-y-3">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
       {services.map((s) => {
         const active = value?.id === s.id;
         return (
           <button
             key={s.id}
             type="button"
-            onClick={() => onChange(s)}
-            className={`w-full p-5 rounded-2xl border-2 text-left transition-all ${
+            onClick={() =>
+              onChange({
+                id: s.id,
+                name: s.name,
+                cost: s.cost,
+                description: s.description,
+                image: s.image,
+                workType: s.workType,
+                categoryId: s.categoryId || category.id,
+                categoryName: s.categoryName || category.name,
+              })
+            }
+            className={`group overflow-hidden rounded-xl border-2 text-left transition-all flex flex-col ${
               active
                 ? "border-primary bg-primary/5 shadow-glow"
-                : "border-border bg-background hover:border-primary/30"
+                : "border-border bg-background hover:border-primary/40"
             }`}
           >
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="font-display font-bold text-lg text-foreground">
-                  {s.name}
+            <div className="aspect-4/3 bg-muted overflow-hidden relative">
+              {s.image ? (
+                <img
+                  src={s.image}
+                  alt={s.name}
+                  loading="lazy"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              ) : (
+                <div className="h-full w-full grid place-items-center">
+                  <ImageIcon className="h-7 w-7 text-muted-foreground" />
                 </div>
-                {s.description && (
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {s.description}
-                  </p>
-                )}
+              )}
+              {active && (
+                <span className="absolute top-2 right-2 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-primary text-primary-foreground shadow">
+                  Selected
+                </span>
+              )}
+            </div>
+            <div className="p-3 flex flex-col flex-1 gap-2">
+              <div className="font-semibold text-sm text-foreground line-clamp-1">
+                {s.name}
               </div>
-              <div className="text-primary font-semibold whitespace-nowrap">
+              {s.description && (
+                <p className="text-xs text-muted-foreground leading-snug line-clamp-2">
+                  {s.description}
+                </p>
+              )}
+              <div className="mt-auto text-primary font-semibold text-sm whitespace-nowrap">
                 {formatRupees(s.cost)}
-                <span className="text-muted-foreground font-normal text-xs ml-1">
-                  / sqft
+                <span className="text-muted-foreground font-normal text-[10px] ml-1">
+                  /sqft
                 </span>
               </div>
             </div>

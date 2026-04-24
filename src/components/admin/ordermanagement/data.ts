@@ -1,6 +1,6 @@
 export type OrderStatus = "requested" | "accepted" | "rejected";
 export type OrderWorkStatus = "pending" | "started" | "completed";
-export type OrderCategory = "interior" | "exterior";
+export type OrderCategory = string;
 export type OrderPropertyType = "apartment" | "villa" | "building" | "office";
 
 export type OrderAddress = {

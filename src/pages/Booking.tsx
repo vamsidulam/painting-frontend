@@ -1,29 +1,36 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { Navbar } from "@/components/site/Navbar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
   CategoryStep,
+  WorkTypeStep,
   ServiceStep,
   PropertyStep,
   LocationStep,
   SummaryStep,
   PaymentStep,
+  BookSlotModal,
   EMPTY_ADDRESS,
   type BookingAddress,
   type BookingService,
   type PropertyType,
   type ServiceCategory,
+  type WorkType,
 } from "@/components/site/booking";
 
 const STEPS = [
   {
     title: "What type of service?",
-    subtitle: "Pick interior or exterior to continue.",
+    subtitle: "Pick a category to continue.",
+  },
+  {
+    title: "Fresh painting or repainting?",
+    subtitle: "Choose the kind of work you need.",
   },
   {
     title: "Choose a service",
@@ -39,56 +46,93 @@ const STEPS = [
   },
   {
     title: "Review your estimate",
-    subtitle: "Confirm the details before continuing to payment.",
+    subtitle: "Book your slot now or pay ahead — your choice.",
   },
   {
     title: "Payment",
-    subtitle: "Scan, pay, then upload your screenshot to submit.",
+    subtitle: "Scan, pay, then upload your screenshot.",
   },
 ];
 
 const TOTAL_STEPS = STEPS.length;
+
+type SavedCustomer = { name: string; email: string; phone: string };
+
+type BookingPrefill = {
+  category: ServiceCategory;
+  workType: WorkType;
+  service: BookingService;
+};
 
 export default function BookingPage() {
   useEffect(() => {
     document.title = "Book a Service — Brushly";
   }, []);
 
-  const [step, setStep] = useState(0);
+  const location = useLocation();
+  const prefill =
+    (location.state as { prefill?: BookingPrefill } | null)?.prefill ?? null;
+
+  const [step, setStep] = useState(prefill ? 3 : 0);
   const [submitted, setSubmitted] = useState(false);
 
-  const [category, setCategory] = useState<ServiceCategory | null>(null);
-  const [service, setService] = useState<BookingService | null>(null);
+  const [category, setCategory] = useState<ServiceCategory | null>(
+    prefill?.category ?? null,
+  );
+  const [workType, setWorkType] = useState<WorkType | null>(
+    prefill?.workType ?? null,
+  );
+  const [service, setService] = useState<BookingService | null>(
+    prefill?.service ?? null,
+  );
   const [propertyType, setPropertyType] = useState<PropertyType | null>(null);
   const [sqft, setSqft] = useState("");
   const [address, setAddress] = useState<BookingAddress>(EMPTY_ADDRESS);
+
+  const [orderId, setOrderId] = useState<string | null>(null);
+  const [savedCustomer, setSavedCustomer] = useState<SavedCustomer | null>(
+    null,
+  );
+  const [bookSlotOpen, setBookSlotOpen] = useState(false);
 
   const progress = ((step + 1) / TOTAL_STEPS) * 100;
   const current = STEPS[step];
   const sqftNumber = Number(sqft) || 0;
   const total = service ? sqftNumber * service.cost : 0;
 
-  const handleCategoryChange = (next: ServiceCategory) => {
-    if (next !== category) setService(null);
-    setCategory(next);
-  };
-
+  const goNextStep = () => setStep((s) => Math.min(TOTAL_STEPS - 1, s + 1));
   const goBack = () => setStep((s) => Math.max(0, s - 1));
 
-  const goNext = () => {
-    if (step === 0 && !category) {
-      toast.error("Please choose a category");
-      return;
+  const handleCategoryChange = (next: ServiceCategory) => {
+    if (category?.id !== next.id) {
+      setService(null);
     }
-    if (step === 1 && !service) {
-      toast.error("Please choose a service");
-      return;
-    }
-    if (step === 2 && !propertyType) {
-      toast.error("Please choose a property type");
-      return;
-    }
-    if (step === 3) {
+    setCategory(next);
+    setOrderId(null);
+    goNextStep();
+  };
+
+  const handleWorkTypeChange = (next: WorkType) => {
+    if (workType !== next) setService(null);
+    setWorkType(next);
+    setOrderId(null);
+    goNextStep();
+  };
+
+  const handleServiceChange = (next: BookingService) => {
+    setService(next);
+    setOrderId(null);
+    goNextStep();
+  };
+
+  const handlePropertyChange = (next: PropertyType) => {
+    setPropertyType(next);
+    setOrderId(null);
+    goNextStep();
+  };
+
+  const handleContinue = () => {
+    if (step === 4) {
       if (!sqft || sqftNumber <= 0) {
         toast.error("Enter a valid area in sqft");
         return;
@@ -104,19 +148,23 @@ export default function BookingPage() {
         toast.error("Pincode must be exactly 6 digits");
         return;
       }
+      goNextStep();
+      return;
     }
-
-    setStep((s) => Math.min(TOTAL_STEPS - 1, s + 1));
+    goNextStep();
   };
 
   const resetBooking = () => {
     setStep(0);
     setSubmitted(false);
     setCategory(null);
+    setWorkType(null);
     setService(null);
     setPropertyType(null);
     setSqft("");
     setAddress(EMPTY_ADDRESS);
+    setOrderId(null);
+    setSavedCustomer(null);
   };
 
   if (submitted) {
@@ -164,25 +212,43 @@ export default function BookingPage() {
     );
   }
 
+  const isAutoStep = step === 0 || step === 1 || step === 2 || step === 3;
+  const showContinueButton = step === 4;
+  const isSlotBookedView = step === 5 && orderId !== null;
+  const showBackButton = step > 0 && !isSlotBookedView;
+
   return (
     <main className="min-h-screen bg-secondary/30">
       <Navbar />
 
-      <section className="pt-32 pb-20">
+      <section className="pt-28 pb-16">
         <div className="container mx-auto px-4 max-w-3xl">
-          <div className="text-center mb-8">
-            <span className="text-primary font-semibold text-sm uppercase tracking-wider">
+          <div className="text-center mb-6">
+            <span className="text-primary font-semibold text-xs uppercase tracking-wider">
               Step {step + 1} of {TOTAL_STEPS}
             </span>
-            <h1 className="mt-2 font-display font-bold text-3xl md:text-4xl text-foreground">
+            <h1 className="mt-1.5 font-display font-bold text-2xl md:text-3xl text-foreground">
               {current.title}
             </h1>
-            <p className="mt-2 text-muted-foreground">{current.subtitle}</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {current.subtitle}
+            </p>
           </div>
 
-          <Progress value={progress} className="mb-8 h-2" />
+          <Progress value={progress} className="mb-6 h-2" />
 
-          <div className="bg-card rounded-3xl p-6 md:p-10 shadow-soft border border-border min-h-[400px]">
+          <div className="relative bg-card rounded-2xl p-5 md:p-8 shadow-soft border border-border min-h-80">
+            {showBackButton && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={goBack}
+                className="absolute top-3 left-3 h-8 px-2.5 rounded-lg text-xs text-muted-foreground hover:text-foreground"
+              >
+                <ArrowLeft className="mr-1 h-3.5 w-3.5" /> Back
+              </Button>
+            )}
             <AnimatePresence mode="wait">
               <motion.div
                 key={step}
@@ -200,25 +266,38 @@ export default function BookingPage() {
 
                 {step === 1 &&
                   (category ? (
-                    <ServiceStep
-                      category={category}
-                      value={service}
-                      onChange={setService}
+                    <WorkTypeStep
+                      value={workType}
+                      onChange={handleWorkTypeChange}
                     />
                   ) : (
-                    <div className="text-center py-10 text-muted-foreground">
+                    <div className="text-center py-8 text-sm text-muted-foreground">
                       Please go back and choose a category first.
                     </div>
                   ))}
 
-                {step === 2 && (
+                {step === 2 &&
+                  (category && workType ? (
+                    <ServiceStep
+                      category={category}
+                      workType={workType}
+                      value={service}
+                      onChange={handleServiceChange}
+                    />
+                  ) : (
+                    <div className="text-center py-8 text-sm text-muted-foreground">
+                      Please go back and complete the previous steps.
+                    </div>
+                  ))}
+
+                {step === 3 && (
                   <PropertyStep
                     value={propertyType}
-                    onChange={setPropertyType}
+                    onChange={handlePropertyChange}
                   />
                 )}
 
-                {step === 3 && (
+                {step === 4 && (
                   <LocationStep
                     sqft={sqft}
                     onSqftChange={setSqft}
@@ -227,17 +306,26 @@ export default function BookingPage() {
                   />
                 )}
 
-                {step === 4 && category && service && propertyType && (
-                  <SummaryStep
-                    category={category}
-                    service={service}
-                    propertyType={propertyType}
-                    sqft={sqftNumber}
-                    address={address}
-                  />
-                )}
+                {step === 5 &&
+                  category &&
+                  service &&
+                  workType &&
+                  propertyType && (
+                    <SummaryStep
+                      category={category}
+                      service={service}
+                      workType={workType}
+                      propertyType={propertyType}
+                      sqft={sqftNumber}
+                      address={address}
+                      orderId={orderId}
+                      onBookSlot={() => setBookSlotOpen(true)}
+                      onPayNow={() => goNextStep()}
+                      onContinuePayment={() => goNextStep()}
+                    />
+                  )}
 
-                {step === 5 && category && service && propertyType && (
+                {step === 6 && category && service && propertyType && (
                   <PaymentStep
                     category={category}
                     service={service}
@@ -245,6 +333,8 @@ export default function BookingPage() {
                     sqft={sqftNumber}
                     address={address}
                     total={total}
+                    orderId={orderId}
+                    initialCustomer={savedCustomer}
                     onSubmitted={() => setSubmitted(true)}
                   />
                 )}
@@ -252,29 +342,42 @@ export default function BookingPage() {
             </AnimatePresence>
           </div>
 
-          <div className="mt-6 flex justify-between gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={goBack}
-              disabled={step === 0}
-              className="rounded-xl h-12"
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" /> Back
-            </Button>
-            {step < TOTAL_STEPS - 1 && (
+          <div className="mt-5 flex justify-end gap-3">
+            {isAutoStep && (
+              <div className="text-xs text-muted-foreground self-center">
+                Tap an option to continue
+              </div>
+            )}
+            {showContinueButton && (
               <Button
                 type="button"
-                onClick={goNext}
-                className="rounded-xl h-12 px-8 font-semibold"
+                onClick={handleContinue}
+                className="rounded-xl h-11 px-6 font-semibold"
               >
-                {step === TOTAL_STEPS - 2 ? "Continue to payment" : "Continue"}
+                Continue
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             )}
           </div>
         </div>
       </section>
+
+      {category && service && workType && propertyType && (
+        <BookSlotModal
+          open={bookSlotOpen}
+          onOpenChange={setBookSlotOpen}
+          category={category}
+          service={service}
+          propertyType={propertyType}
+          sqft={sqftNumber}
+          total={total}
+          address={address}
+          onConfirmed={(id, customer) => {
+            setOrderId(id);
+            setSavedCustomer(customer);
+          }}
+        />
+      )}
     </main>
   );
 }

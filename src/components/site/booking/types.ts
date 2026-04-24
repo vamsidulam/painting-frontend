@@ -1,13 +1,28 @@
-export type ServiceCategory = "interior" | "exterior";
+export type ServiceCategory = {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+};
 
 export type PropertyType = "apartment" | "villa" | "building" | "office";
+
+export type WorkType = "fresh" | "repainting";
+
+export const WORK_TYPE_LABEL: Record<WorkType, string> = {
+  fresh: "Fresh Painting",
+  repainting: "Repainting",
+};
 
 export type BookingService = {
   id: string;
   name: string;
   cost: number;
   description: string;
-  category: ServiceCategory;
+  image?: string;
+  workType?: WorkType;
+  categoryId?: string;
+  categoryName?: string;
 };
 
 export type BookingAddress = {

@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Loader2, Mail, Phone, Upload, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,12 @@ import {
   type ServiceCategory,
 } from "./types";
 
+type InitialCustomer = {
+  name: string;
+  email: string;
+  phone: string;
+};
+
 type Props = {
   category: ServiceCategory;
   service: BookingService;
@@ -20,6 +26,8 @@ type Props = {
   sqft: number;
   address: BookingAddress;
   total: number;
+  orderId: string | null;
+  initialCustomer?: InitialCustomer | null;
   onSubmitted: () => void;
 };
 
@@ -34,14 +42,26 @@ export function PaymentStep({
   sqft,
   address,
   total,
+  orderId,
+  initialCustomer,
   onSubmitted,
 }: Props) {
   const [screenshot, setScreenshot] = useState<File | null>(null);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [name, setName] = useState(initialCustomer?.name ?? "");
+  const [email, setEmail] = useState(initialCustomer?.email ?? "");
+  const [phone, setPhone] = useState(initialCustomer?.phone ?? "");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const isAttachMode = Boolean(orderId);
+
+  useEffect(() => {
+    if (initialCustomer) {
+      setName(initialCustomer.name);
+      setEmail(initialCustomer.email);
+      setPhone(initialCustomer.phone);
+    }
+  }, [initialCustomer]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -51,6 +71,31 @@ export function PaymentStep({
       setError("Please upload your payment screenshot.");
       return;
     }
+
+    if (isAttachMode && orderId) {
+      const fd = new FormData();
+      fd.append("screenshot", screenshot);
+
+      setSubmitting(true);
+      try {
+        await api(`/orders/${orderId}/screenshot`, {
+          method: "POST",
+          auth: false,
+          body: fd,
+        });
+        onSubmitted();
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Failed to upload your screenshot",
+        );
+      } finally {
+        setSubmitting(false);
+      }
+      return;
+    }
+
     if (phone.length !== 10) {
       setError("Phone must be exactly 10 digits.");
       return;
@@ -58,7 +103,8 @@ export function PaymentStep({
 
     const fd = new FormData();
     fd.append("screenshot", screenshot);
-    fd.append("category", category);
+    fd.append("category", category.name);
+    fd.append("categoryId", category.id);
     fd.append(
       "service",
       JSON.stringify({ id: service.id, name: service.name, cost: service.cost }),
@@ -86,13 +132,13 @@ export function PaymentStep({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="text-center space-y-3">
         <div className="inline-block rounded-2xl border border-border p-3 bg-background">
           <img
             src={QR_IMAGE_DATA_URL}
             alt="PhonePe QR code"
-            className="h-48 w-48"
+            className="h-40 w-40"
             draggable={false}
           />
         </div>
@@ -100,7 +146,7 @@ export function PaymentStep({
           <div className="text-xs uppercase tracking-wide text-muted-foreground">
             Scan to pay
           </div>
-          <div className="font-display font-bold text-2xl text-foreground">
+          <div className="font-display font-bold text-xl text-foreground">
             {formatRupees(total)}
           </div>
           <p className="text-xs text-muted-foreground">
@@ -113,7 +159,7 @@ export function PaymentStep({
         <Label htmlFor="order-screenshot">Payment screenshot</Label>
         <label
           htmlFor="order-screenshot"
-          className={`flex flex-col items-center justify-center h-32 rounded-xl border-2 border-dashed cursor-pointer transition-colors ${
+          className={`flex flex-col items-center justify-center h-28 rounded-xl border-2 border-dashed cursor-pointer transition-colors ${
             screenshot
               ? "border-primary bg-primary/5"
               : "border-border bg-muted/30 hover:border-primary/50"
@@ -121,7 +167,7 @@ export function PaymentStep({
         >
           {screenshot ? (
             <div className="text-center px-4">
-              <div className="text-sm font-medium text-foreground truncate max-w-[240px]">
+              <div className="text-sm font-medium text-foreground truncate max-w-60">
                 {screenshot.name}
               </div>
               <div className="text-xs text-muted-foreground mt-1">
@@ -130,8 +176,8 @@ export function PaymentStep({
             </div>
           ) : (
             <>
-              <Upload className="h-6 w-6 text-muted-foreground" />
-              <span className="mt-2 text-sm text-muted-foreground">
+              <Upload className="h-5 w-5 text-muted-foreground" />
+              <span className="mt-1.5 text-sm text-muted-foreground">
                 Click to upload screenshot
               </span>
               <span className="text-xs text-muted-foreground mt-0.5">
@@ -149,60 +195,62 @@ export function PaymentStep({
         </label>
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-4">
-        <div className="space-y-2 sm:col-span-2">
-          <Label htmlFor="order-name">Full name</Label>
-          <div className="relative">
-            <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              id="order-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Jane Doe"
-              required
-              minLength={2}
-              maxLength={100}
-              className="pl-10 h-12 rounded-xl"
-            />
+      {!isAttachMode && (
+        <div className="grid sm:grid-cols-2 gap-3">
+          <div className="space-y-2 sm:col-span-2">
+            <Label htmlFor="order-name">Full name</Label>
+            <div className="relative">
+              <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="order-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Jane Doe"
+                required
+                minLength={2}
+                maxLength={100}
+                className="pl-10 h-11 rounded-xl"
+              />
+            </div>
           </div>
-        </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="order-email">Email</Label>
-          <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              id="order-email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="jane@example.com"
-              required
-              className="pl-10 h-12 rounded-xl"
-            />
+          <div className="space-y-2">
+            <Label htmlFor="order-email">Email</Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="order-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="jane@example.com"
+                required
+                className="pl-10 h-11 rounded-xl"
+              />
+            </div>
           </div>
-        </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="order-phone">Phone</Label>
-          <div className="relative">
-            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              id="order-phone"
-              type="tel"
-              inputMode="numeric"
-              value={phone}
-              onChange={(e) => setPhone(onlyDigits(e.target.value, 10))}
-              placeholder="10-digit mobile number"
-              required
-              pattern="\d{10}"
-              minLength={10}
-              maxLength={10}
-              className="pl-10 h-12 rounded-xl tracking-wide"
-            />
+          <div className="space-y-2">
+            <Label htmlFor="order-phone">Phone</Label>
+            <div className="relative">
+              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="order-phone"
+                type="tel"
+                inputMode="numeric"
+                value={phone}
+                onChange={(e) => setPhone(onlyDigits(e.target.value, 10))}
+                placeholder="10-digit mobile number"
+                required
+                pattern="\d{10}"
+                minLength={10}
+                maxLength={10}
+                className="pl-10 h-11 rounded-xl tracking-wide"
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {error && (
         <div className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-xl px-3 py-2">
@@ -218,8 +266,10 @@ export function PaymentStep({
         {submitting ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Submitting…
+            {isAttachMode ? "Uploading…" : "Submitting…"}
           </>
+        ) : isAttachMode ? (
+          "Upload payment screenshot"
         ) : (
           "Submit booking"
         )}

@@ -16,8 +16,8 @@ import { Pagination } from "./Pagination";
 import { EditServiceModal } from "./EditServiceModal";
 import { DeleteServiceDialog } from "./DeleteServiceDialog";
 import type {
-  CategoryFilter,
   PaginationMeta,
+  ServiceCategoryRecord,
   ServiceRecord,
 } from "./data";
 
@@ -26,9 +26,16 @@ type ListResponse = {
   data: { rows: ServiceRecord[]; pagination: PaginationMeta };
 };
 
+type CategoriesResponse = {
+  success: boolean;
+  data: { rows: ServiceCategoryRecord[]; pagination: PaginationMeta };
+};
+
 type Props = {
   headerAction?: ReactNode;
   searchPlaceholder?: string;
+  lockedCategoryId?: string;
+  lockedCategoryName?: string;
 };
 
 export type ServicesPanelHandle = {
@@ -37,17 +44,13 @@ export type ServicesPanelHandle = {
 
 const PAGE_SIZE = 10;
 
-const FILTERS: { value: CategoryFilter; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "interior", label: "Interior" },
-  { value: "exterior", label: "Exterior" },
-];
-
 export const ServicesPanel = forwardRef<ServicesPanelHandle, Props>(
   function ServicesPanel(
     {
       headerAction,
       searchPlaceholder = "Search by name or description — press Enter",
+      lockedCategoryId,
+      lockedCategoryName,
     },
     ref,
   ) {
@@ -58,7 +61,11 @@ export const ServicesPanel = forwardRef<ServicesPanelHandle, Props>(
 
     const [searchInput, setSearchInput] = useState("");
     const [committedSearch, setCommittedSearch] = useState("");
-    const [category, setCategory] = useState<CategoryFilter>("all");
+    const [categoryId, setCategoryId] = useState<string>(
+      lockedCategoryId ?? "all",
+    );
+
+    const [categories, setCategories] = useState<ServiceCategoryRecord[]>([]);
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -67,6 +74,27 @@ export const ServicesPanel = forwardRef<ServicesPanelHandle, Props>(
     const [deleteTarget, setDeleteTarget] = useState<ServiceRecord | null>(
       null,
     );
+
+    useEffect(() => {
+      if (lockedCategoryId) {
+        setCategoryId(lockedCategoryId);
+      }
+    }, [lockedCategoryId]);
+
+    useEffect(() => {
+      if (lockedCategoryId) return;
+      let cancelled = false;
+      api<CategoriesResponse>("/admin/service-categories?page=1&limit=100")
+        .then((res) => {
+          if (!cancelled) setCategories(res.data.rows);
+        })
+        .catch(() => {
+          if (!cancelled) setCategories([]);
+        });
+      return () => {
+        cancelled = true;
+      };
+    }, [lockedCategoryId]);
 
     const fetchPage = useCallback(async () => {
       setLoading(true);
@@ -77,7 +105,7 @@ export const ServicesPanel = forwardRef<ServicesPanelHandle, Props>(
           limit: String(PAGE_SIZE),
         });
         if (committedSearch) params.set("q", committedSearch);
-        if (category !== "all") params.set("category", category);
+        if (categoryId !== "all") params.set("categoryId", categoryId);
 
         const res = await api<ListResponse>(
           `/admin/services?${params.toString()}`,
@@ -95,7 +123,7 @@ export const ServicesPanel = forwardRef<ServicesPanelHandle, Props>(
       } finally {
         setLoading(false);
       }
-    }, [page, committedSearch, category]);
+    }, [page, committedSearch, categoryId]);
 
     useEffect(() => {
       fetchPage();
@@ -128,17 +156,16 @@ export const ServicesPanel = forwardRef<ServicesPanelHandle, Props>(
       }
     };
 
-    const handleCategoryChange = (next: CategoryFilter) => {
-      if (next === category) return;
+    const handleCategoryChange = (next: string) => {
+      if (next === categoryId) return;
       setPage(1);
-      setCategory(next);
+      setCategoryId(next);
     };
 
     const handleServiceUpdated = (updated: ServiceRecord) => {
       setRows((list) => list.map((r) => (r.id === updated.id ? updated : r)));
       setEditTarget(null);
-      // If the edit changed the category and we're filtering by one, refetch.
-      if (category !== "all" && updated.category !== category) {
+      if (categoryId !== "all" && updated.categoryId !== categoryId) {
         fetchPage();
       }
     };
@@ -152,28 +179,43 @@ export const ServicesPanel = forwardRef<ServicesPanelHandle, Props>(
       }
     };
 
+    const showFilters = !lockedCategoryId;
+
     return (
       <div className="space-y-4">
         <div className="flex flex-col lg:flex-row lg:items-center gap-3">
-          <div className="inline-flex items-center gap-1 p-1 rounded-xl bg-muted w-fit">
-            {FILTERS.map((f) => {
-              const active = category === f.value;
-              return (
-                <button
-                  key={f.value}
-                  type="button"
-                  onClick={() => handleCategoryChange(f.value)}
-                  className={`px-3 h-8 rounded-lg text-sm font-medium transition-colors ${
-                    active
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {f.label}
-                </button>
-              );
-            })}
-          </div>
+          {showFilters && categories.length > 0 && (
+            <div className="inline-flex items-center gap-1 p-1 rounded-xl bg-muted w-fit overflow-x-auto max-w-full">
+              <button
+                type="button"
+                onClick={() => handleCategoryChange("all")}
+                className={`px-3 h-8 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
+                  categoryId === "all"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                All
+              </button>
+              {categories.map((c) => {
+                const active = categoryId === c.id;
+                return (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => handleCategoryChange(c.id)}
+                    className={`px-3 h-8 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
+                      active
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {c.name}
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           <form
             onSubmit={handleSearchSubmit}
@@ -243,10 +285,10 @@ export const ServicesPanel = forwardRef<ServicesPanelHandle, Props>(
           onDelete={setDeleteTarget}
           emptyLabel={
             committedSearch
-              ? `No ${category === "all" ? "services" : category + " services"} match “${committedSearch}”.`
-              : category === "all"
-                ? "No services yet. Create one to get started."
-                : `No ${category} services yet.`
+              ? `No services match “${committedSearch}”.`
+              : lockedCategoryName
+                ? `No services yet in ${lockedCategoryName}.`
+                : "No services yet. Create one to get started."
           }
           loading={loading}
         />

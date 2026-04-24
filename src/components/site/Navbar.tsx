@@ -1,14 +1,15 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Menu, X, PaintBucket } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
-  {label:"Home",to:'/'},
+  { label: "Home", to: "/" },
   { label: "Services", to: "/services" },
-  // { label: "How it Works", to: "/#how" },
-  // { label: "Projects", to: "/#projects" },
-  // { label: "Dashboard", to: "/dashboard" },
+  { label: "Projects", to: "/projects" },
+  { label: "Reviews", to: "/reviews" },
+  { label: "About", to: "/about" },
+  { label: "Help", to: "/help" },
 ];
 
 export function Navbar() {
@@ -25,47 +26,49 @@ export function Navbar() {
   return (
     <header
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-        scrolled ? "py-3" : "py-5"
+        scrolled ? "py-2" : "py-4"
       }`}
     >
       <div className="container mx-auto px-4">
-        <div
-          className={`flex items-center justify-between rounded-2xl px-4 md:px-6 py-3 transition-all glass shadow-lg shadow-primary/10 ring-1 ring-black/5`}
-        >
-          <Link to="/" className="flex items-center gap-2 group">
+        <div className="flex items-center justify-between rounded-2xl px-4 md:px-6 py-3 transition-all glass shadow-lg shadow-primary/10 ring-1 ring-black/5">
+          <Link to="/" className="flex items-center gap-2 group shrink-0">
             <div className="h-9 w-9 rounded-xl gradient-primary flex items-center justify-center shadow-glow group-hover:scale-110 transition-transform">
               <PaintBucket className="h-5 w-5 text-primary-foreground" />
             </div>
             <span className="font-display font-bold text-xl text-foreground">
-              Brush<span className="text-accent">ly</span>
+              Paint<span className="text-accent">Brush</span>
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-1 rounded-full bg-muted/60 border border-border/60 p-1">
             {navItems.map((item) => (
-              <a
+              <NavLink
                 key={item.to}
-                href={item.to}
-                className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors relative after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-0.5 after:w-0 after:bg-accent after:transition-all hover:after:w-full"
+                to={item.to}
+                end={item.to === "/"}
+                className={({ isActive }) =>
+                  `px-3.5 py-1.5 rounded-full text-sm font-medium transition-all ${
+                    isActive
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-foreground/80 hover:bg-background hover:text-primary"
+                  }`
+                }
               >
                 {item.label}
-              </a>
+              </NavLink>
             ))}
           </nav>
 
-          <div className="hidden md:flex items-center gap-3">
-            {/* <Link to="/booking">
-              <Button variant="ghost" className="rounded-xl">Get Quote</Button>
-            </Link> */}
+          <div className="hidden lg:flex items-center gap-3 shrink-0">
             <Link to="/booking">
-              <Button style={{cursor:'pointer'}} className="  rounded-xl gradient-accent text-accent-foreground shadow-accent-glow hover:opacity-95">
+              <Button className="rounded-xl gradient-accent text-accent-foreground shadow-accent-glow hover:opacity-95 cursor-pointer">
                 Book Now
               </Button>
             </Link>
           </div>
 
           <button
-            className="md:hidden p-2 rounded-xl hover:bg-muted transition"
+            className="lg:hidden p-2 rounded-xl hover:bg-muted transition"
             onClick={() => setOpen((v) => !v)}
             aria-label="Toggle menu"
           >
@@ -74,20 +77,27 @@ export function Navbar() {
         </div>
 
         {open && (
-          <div className="md:hidden mt-2 glass rounded-2xl p-4 shadow-soft animate-in fade-in slide-in-from-top-2">
-            <div className="flex flex-col gap-2">
+          <div className="lg:hidden mt-2 glass rounded-2xl p-4 shadow-soft animate-in fade-in slide-in-from-top-2">
+            <div className="flex flex-col gap-1">
               {navItems.map((item) => (
-                <a
+                <NavLink
                   key={item.to}
-                  href={item.to}
+                  to={item.to}
+                  end={item.to === "/"}
                   onClick={() => setOpen(false)}
-                  className="px-3 py-2 rounded-xl hover:bg-muted text-sm font-medium"
+                  className={({ isActive }) =>
+                    `px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
+                      isActive
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted text-foreground/80"
+                    }`
+                  }
                 >
                   {item.label}
-                </a>
+                </NavLink>
               ))}
               <Link to="/booking" onClick={() => setOpen(false)}>
-                <Button className="w-full rounded-xl gradient-accent text-accent-foreground mt-2">
+                <Button className="w-full rounded-xl gradient-accent text-accent-foreground mt-3">
                   Book Now
                 </Button>
               </Link>

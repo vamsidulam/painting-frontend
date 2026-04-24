@@ -1,92 +1,41 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { ArrowRight, Image as ImageIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 import { api } from "@/lib/api";
 
-type ServiceCategory = "interior" | "exterior";
-
-type Service = {
+type PublicCategory = {
   id: string;
   name: string;
-  cost: number;
   description: string;
-  category: ServiceCategory;
+  image: string;
 };
-
-type Filter = "all" | ServiceCategory;
 
 type ListResponse = {
   success: boolean;
-  data: { services: Service[] };
-};
-
-const FILTERS: { value: Filter; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "interior", label: "Interior" },
-  { value: "exterior", label: "Exterior" },
-];
-
-function formatRupees(value: number) {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0,
-  }).format(value);
-}
-
-type SeedAdminResponse = {
-  success: boolean;
-  alreadyExisted: boolean;
-  message: string;
+  data: { categories: PublicCategory[] };
 };
 
 export function Services() {
-  const [filter, setFilter] = useState<Filter>("all");
-  const [services, setServices] = useState<Service[]>([]);
+  const [categories, setCategories] = useState<PublicCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [seeding, setSeeding] = useState(false);
-
-  const handleSeedAdmin = async () => {
-    setSeeding(true);
-    try {
-      const res = await api<SeedAdminResponse>("/seed/admin", {
-        method: "POST",
-        auth: false,
-      });
-      if (res.alreadyExisted) {
-        toast.message(res.message);
-      } else {
-        toast.success(res.message);
-      }
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Seed failed");
-    } finally {
-      setSeeding(false);
-    }
-  };
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setError(null);
 
-    const params = new URLSearchParams();
-    if (filter !== "all") params.set("category", filter);
-    const qs = params.toString();
-    const path = qs ? `/services?${qs}` : "/services";
-
-    api<ListResponse>(path, { auth: false })
+    api<ListResponse>("/services/categories", { auth: false })
       .then((res) => {
-        if (!cancelled) setServices(res.data.services);
+        if (!cancelled) setCategories(res.data.categories);
       })
       .catch((err) => {
         if (!cancelled) {
           setError(
-            err instanceof Error ? err.message : "Failed to load services",
+            err instanceof Error ? err.message : "Failed to load categories",
           );
-          setServices([]);
+          setCategories([]);
         }
       })
       .finally(() => {
@@ -96,11 +45,11 @@ export function Services() {
     return () => {
       cancelled = true;
     };
-  }, [filter]);
+  }, []);
 
   return (
-    <section id="services" className="py-24 md:py-32">
-      <div className="container mx-auto px-4">
+    <section id="services" className="pt-24 md:pt-28 pb-20 md:pb-28">
+      <div className="container mx-auto px-6 md:px-10 lg:px-14 xl:px-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -112,94 +61,99 @@ export function Services() {
             Our Services
           </span>
           <h2 className="mt-3 font-display font-bold text-4xl md:text-5xl text-foreground">
-            Everything your walls need,
+            Pick a category,
             <br />
-            <span className="text-gradient">in one place.</span>
+            <span className="text-gradient">we'll do the rest.</span>
           </h2>
+          <p className="mt-4 text-muted-foreground text-lg">
+            Browse categories and dive into the services that fit your space.
+          </p>
         </motion.div>
 
-        <div className="mt-8 inline-flex items-center gap-1 p-1 rounded-xl bg-muted">
-          {FILTERS.map((f) => {
-            const active = filter === f.value;
-            return (
-              <button
-                key={f.value}
-                type="button"
-                onClick={() => setFilter(f.value)}
-                className={`px-4 h-9 rounded-lg text-sm font-medium transition-colors ${
-                  active
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {f.label}
-              </button>
-            );
-          })}
-        </div>
-
         {loading ? (
-          <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {Array.from({ length: 3 }).map((_, i) => (
               <div
                 key={i}
-                className="h-40 rounded-2xl bg-card/60 border border-border animate-pulse"
+                className="h-80 rounded-3xl bg-card/60 border border-border animate-pulse"
               />
             ))}
           </div>
         ) : error ? (
-          <div className="mt-10 text-center text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-2xl px-6 py-8">
+          <div className="mt-12 text-center text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-2xl px-6 py-8">
             {error}
           </div>
-        ) : services.length === 0 ? (
-          <div className="mt-10 text-center text-sm text-muted-foreground bg-card border border-border rounded-2xl px-6 py-8">
-            {filter === "all"
-              ? "No services available yet."
-              : `No ${filter} services yet.`}
+        ) : categories.length === 0 ? (
+          <div className="mt-12 text-center text-sm text-muted-foreground bg-card border border-border rounded-2xl px-6 py-10">
+            No categories available yet.
           </div>
         ) : (
-          <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {services.map((s, i) => (
-              <motion.div
-                key={s.id}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.05 }}
-                className="bg-card rounded-2xl p-6 border border-border shadow-card"
-              >
-                <h3 className="font-display font-bold text-xl text-foreground">
-                  {s.name}
-                </h3>
-                <div className="mt-1 text-primary font-semibold">
-                  {formatRupees(s.cost)}
-                  <span className="text-muted-foreground font-normal text-sm ml-1">
-                    / sqft
-                  </span>
-                </div>
-                {s.description && (
-                  <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-                    {s.description}
-                  </p>
-                )}
-              </motion.div>
+          <div className="mt-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {categories.map((c, i) => (
+              <CategoryCard key={c.id} category={c} index={i} />
             ))}
           </div>
         )}
-
-        {/* <div className="mt-10 text-center">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleSeedAdmin}
-            disabled={seeding}
-            className="rounded-xl"
-          >
-            {seeding ? "Seeding…" : "Seed admin"}
-          </Button>
-        </div> */}
       </div>
     </section>
+  );
+}
+
+function CategoryCard({
+  category,
+  index,
+}: {
+  category: PublicCategory;
+  index: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.45, delay: index * 0.06 }}
+    >
+      <Link
+        to={`/categories/${category.id}`}
+        className="group relative block h-full rounded-2xl overflow-hidden bg-card border border-border shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-glow"
+      >
+        <div className="aspect-4/3 overflow-hidden bg-muted relative">
+          {category.image ? (
+            <img
+              src={category.image}
+              alt={category.name}
+              loading="lazy"
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          ) : (
+            <div className="h-full w-full grid place-items-center text-muted-foreground">
+              <ImageIcon className="h-10 w-10 text-primary/40" />
+            </div>
+          )}
+          <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        </div>
+
+        <div className="p-4 flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <h3 className="font-display font-semibold text-base text-foreground line-clamp-1">
+              {category.name}
+            </h3>
+            {category.description && (
+              <p className="mt-1 text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                {category.description}
+              </p>
+            )}
+            <div className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary">
+              Explore
+              <ArrowRight className="h-3 w-3 transition-transform duration-300 group-hover:translate-x-0.5" />
+            </div>
+          </div>
+
+          <div className="h-8 w-8 shrink-0 rounded-full bg-primary/10 text-primary grid place-items-center transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
+            <ArrowRight className="h-4 w-4" />
+          </div>
+        </div>
+      </Link>
+    </motion.div>
   );
 }

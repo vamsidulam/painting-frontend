@@ -1,70 +1,112 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import project1 from "@/assets/project-1.jpg";
-import project2 from "@/assets/project-2.jpg";
-import project3 from "@/assets/project-3.jpg";
-import project4 from "@/assets/project-4.jpg";
-import hero1 from "@/assets/hero-1.jpg";
+import { ArrowRight, Image as ImageIcon } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { api } from "@/lib/api";
 
-const projects = [
-  { image: project1, title: "Bedroom Makeover", category: "Interior" },
-  { image: project2, title: "Office Refresh", category: "Commercial" },
-  { image: project3, title: "Kitchen Cabinets", category: "Interior" },
-  { image: project4, title: "Villa Exterior", category: "Exterior" },
-  { image: hero1, title: "Living Room", category: "Interior" },
-  { image: project1, title: "Master Suite", category: "Interior" },
-];
+type PublicProject = {
+  id: string;
+  name: string;
+  image: string;
+};
 
-function ProjectCard({ project, index }: { project: (typeof projects)[number]; index: number }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.08 }}
-      className="group relative rounded-3xl overflow-hidden shadow-card hover:shadow-glow transition-all duration-500 cursor-pointer aspect-[4/5]"
-    >
-      <img
-        src={project.image}
-        alt={project.title}
-        loading="lazy"
-        className="absolute inset-0 h-full w-full object-cover transition-all duration-700 group-hover:scale-110"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-primary/95 via-primary/20 to-transparent" />
-
-      <div className="absolute top-4 left-4 right-4 flex justify-between">
-        <span className="px-3 py-1 rounded-full glass-dark text-primary-foreground text-xs font-medium">
-          {project.category}
-        </span>
-      </div>
-
-      <div className="absolute bottom-0 left-0 right-0 p-6">
-        <h3 className="font-display font-bold text-xl text-primary-foreground">{project.title}</h3>
-      </div>
-    </motion.div>
-  );
-}
+type ListResponse = {
+  success: boolean;
+  data: { projects: PublicProject[] };
+};
 
 export function Projects() {
+  const [projects, setProjects] = useState<PublicProject[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    api<ListResponse>("/projects", { auth: false })
+      .then((res) => {
+        if (!cancelled) setProjects(res.data.projects.slice(0, 8));
+      })
+      .catch(() => {
+        if (!cancelled) setProjects([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <section id="projects" className="py-24 md:py-32">
-      <div className="container mx-auto px-4">
-        <div className="text-center max-w-2xl mx-auto">
-          <span className="text-accent font-semibold text-sm uppercase tracking-wider">
-            Recent projects
-          </span>
-          <h2 className="mt-3 font-display font-bold text-4xl md:text-5xl text-foreground">
-            Work we&rsquo;re <span className="text-gradient">proud of</span>.
-          </h2>
-          <p className="mt-4 text-muted-foreground text-lg">
-            A glimpse of our recent transformations.
-          </p>
+      <div className="container mx-auto px-6 md:px-10 lg:px-14 xl:px-20">
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div className="max-w-2xl">
+            <span className="text-accent font-semibold text-sm uppercase tracking-wider">
+              Recent projects
+            </span>
+            <h2 className="mt-3 font-display font-bold text-4xl md:text-5xl text-foreground">
+              Work we&rsquo;re <span className="text-gradient">proud of</span>.
+            </h2>
+            <p className="mt-4 text-muted-foreground text-lg">
+              A glimpse of our recent transformations.
+            </p>
+          </div>
+
+          <Link to="/projects" className="shrink-0">
+            <Button variant="outline" className="rounded-xl h-10 gap-1">
+              View all
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
         </div>
 
-        <div className="mt-16 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((p, i) => (
-            <ProjectCard key={i} project={p} index={i} />
-          ))}
-        </div>
+        {loading ? (
+          <div className="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="aspect-square rounded-2xl bg-card/60 border border-border animate-pulse"
+              />
+            ))}
+          </div>
+        ) : projects.length === 0 ? (
+          <div className="mt-10 text-center text-sm text-muted-foreground bg-card border border-border rounded-2xl px-5 py-10">
+            No projects to display yet.
+          </div>
+        ) : (
+          <div className="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {projects.map((p, i) => (
+              <motion.div
+                key={p.id}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: i * 0.04 }}
+                className="group relative rounded-2xl overflow-hidden shadow-[0_20px_45px_-20px_rgba(0,0,0,0.25)] hover:shadow-[0_30px_60px_-20px_rgba(0,0,0,0.35)] transition-shadow duration-300 aspect-square"
+              >
+                {p.image ? (
+                  <img
+                    src={p.image}
+                    alt={p.name}
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-muted grid place-items-center">
+                    <ImageIcon className="h-10 w-10 text-muted-foreground" />
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-linear-to-t from-primary/90 via-primary/15 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-3">
+                  <h3 className="font-display font-semibold text-sm text-primary-foreground line-clamp-1">
+                    {p.name}
+                  </h3>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

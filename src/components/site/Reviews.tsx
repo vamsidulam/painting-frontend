@@ -44,7 +44,7 @@ export function Reviews() {
 
   return (
     <section className="py-24 md:py-32 bg-secondary/40">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-6 md:px-10 lg:px-14 xl:px-20">
         <div className="text-center max-w-2xl mx-auto">
           <span className="text-accent font-semibold text-sm uppercase tracking-wider">
             Loved by thousands

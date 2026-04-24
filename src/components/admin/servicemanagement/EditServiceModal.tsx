@@ -20,10 +20,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { api } from "@/lib/api";
+import { ImageField } from "./ImageField";
 import {
-  CATEGORY_OPTIONS,
-  type ServiceCategory,
+  WORK_TYPE_OPTIONS,
+  type PaginationMeta,
+  type ServiceCategoryRecord,
   type ServiceRecord,
+  type WorkType,
 } from "./data";
 
 type Props = {
@@ -37,11 +40,20 @@ type UpdateResponse = {
   data: { service: ServiceRecord };
 };
 
+type CategoriesResponse = {
+  success: boolean;
+  data: { rows: ServiceCategoryRecord[]; pagination: PaginationMeta };
+};
+
 export function EditServiceModal({ service, onClose, onUpdated }: Props) {
   const [name, setName] = useState("");
   const [cost, setCost] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState<ServiceCategory>("interior");
+  const [categoryId, setCategoryId] = useState<string>("");
+  const [workType, setWorkType] = useState<WorkType>("fresh");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [removeImage, setRemoveImage] = useState(false);
+  const [categories, setCategories] = useState<ServiceCategoryRecord[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,9 +62,27 @@ export function EditServiceModal({ service, onClose, onUpdated }: Props) {
       setName(service.name);
       setCost(String(service.cost));
       setDescription(service.description ?? "");
-      setCategory(service.category);
+      setCategoryId(service.categoryId ?? "");
+      setWorkType(service.workType ?? "fresh");
+      setImageFile(null);
+      setRemoveImage(false);
       setError(null);
     }
+  }, [service]);
+
+  useEffect(() => {
+    if (!service) return;
+    let cancelled = false;
+    api<CategoriesResponse>("/admin/service-categories?page=1&limit=100")
+      .then((res) => {
+        if (!cancelled) setCategories(res.data.rows);
+      })
+      .catch(() => {
+        if (!cancelled) setCategories([]);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [service]);
 
   const handleSubmit = async (e: FormEvent) => {
@@ -67,20 +97,43 @@ export function EditServiceModal({ service, onClose, onUpdated }: Props) {
       setError("Cost must be a non-negative number.");
       return;
     }
+    if (!categoryId) {
+      setError("Please choose a category.");
+      return;
+    }
 
-    const patch: {
-      name?: string;
-      cost?: number;
-      description?: string;
-      category?: ServiceCategory;
-    } = {};
-    if (trimmedName !== service.name) patch.name = trimmedName;
-    if (parsedCost !== service.cost) patch.cost = parsedCost;
-    if (trimmedDesc !== (service.description ?? ""))
-      patch.description = trimmedDesc;
-    if (category !== service.category) patch.category = category;
+    const form = new FormData();
+    let hasChange = false;
 
-    if (Object.keys(patch).length === 0) {
+    if (trimmedName !== service.name) {
+      form.set("name", trimmedName);
+      hasChange = true;
+    }
+    if (parsedCost !== service.cost) {
+      form.set("cost", String(parsedCost));
+      hasChange = true;
+    }
+    if (trimmedDesc !== (service.description ?? "")) {
+      form.set("description", trimmedDesc);
+      hasChange = true;
+    }
+    if (categoryId !== (service.categoryId ?? "")) {
+      form.set("categoryId", categoryId);
+      hasChange = true;
+    }
+    if (workType !== (service.workType ?? "fresh")) {
+      form.set("workType", workType);
+      hasChange = true;
+    }
+    if (imageFile) {
+      form.set("image", imageFile);
+      hasChange = true;
+    } else if (removeImage && service.image) {
+      form.set("removeImage", "true");
+      hasChange = true;
+    }
+
+    if (!hasChange) {
       onClose();
       return;
     }
@@ -90,7 +143,7 @@ export function EditServiceModal({ service, onClose, onUpdated }: Props) {
     try {
       const res = await api<UpdateResponse>(`/admin/services/${service.id}`, {
         method: "PATCH",
-        body: patch,
+        body: form,
       });
       toast.success(`Updated ${res.data.service.name}`);
       onUpdated(res.data.service);
@@ -108,11 +161,11 @@ export function EditServiceModal({ service, onClose, onUpdated }: Props) {
         if (!open && !submitting) onClose();
       }}
     >
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Edit service</DialogTitle>
           <DialogDescription>
-            Update the name, category, cost, or description.
+            Update the name, category, cost, image, or description.
           </DialogDescription>
         </DialogHeader>
 
@@ -133,16 +186,42 @@ export function EditServiceModal({ service, onClose, onUpdated }: Props) {
           <div className="space-y-2">
             <Label htmlFor="edit-service-category">Category</Label>
             <Select
-              value={category}
-              onValueChange={(v) => setCategory(v as ServiceCategory)}
+              value={categoryId}
+              onValueChange={(v) => setCategoryId(v)}
+              disabled={categories.length === 0}
             >
-              <SelectTrigger id="edit-service-category" className="h-11 rounded-xl">
-                <SelectValue />
+              <SelectTrigger
+                id="edit-service-category"
+                className="h-11 rounded-xl"
+              >
+                <SelectValue placeholder="Choose a category" />
               </SelectTrigger>
               <SelectContent>
-                {CATEGORY_OPTIONS.map((o) => (
-                  <SelectItem key={o.value} value={o.value}>
-                    {o.label}
+                {categories.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="edit-service-worktype">Work type</Label>
+            <Select
+              value={workType}
+              onValueChange={(v) => setWorkType(v as WorkType)}
+            >
+              <SelectTrigger
+                id="edit-service-worktype"
+                className="h-11 rounded-xl"
+              >
+                <SelectValue placeholder="Fresh painting or repainting" />
+              </SelectTrigger>
+              <SelectContent>
+                {WORK_TYPE_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -176,6 +255,16 @@ export function EditServiceModal({ service, onClose, onUpdated }: Props) {
               className="rounded-xl"
             />
           </div>
+
+          <ImageField
+            id="edit-service-image"
+            label="Image (optional)"
+            initialUrl={service?.image || ""}
+            file={imageFile}
+            onFileChange={setImageFile}
+            removed={removeImage}
+            onRemovedChange={setRemoveImage}
+          />
 
           {error && (
             <div className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-xl px-3 py-2">
