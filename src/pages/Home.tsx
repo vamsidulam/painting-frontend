@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Navbar } from "@/components/site/Navbar";
 import { Hero } from "@/components/site/Hero";
 import { Services } from "@/components/site/Services";
+import { PaintTypes } from "@/components/site/PaintTypes";
 import { Showcase } from "@/components/site/Showcase";
 import { ExploreBeyond } from "@/components/site/ExploreBeyond";
 import { HorizontalScroll } from "@/components/site/HorizontalScroll";
@@ -26,6 +27,7 @@ export default function HomePage() {
       <Hero />
       
       <Services />
+      <PaintTypes />
       <ExploreBeyond />
 
       <HorizontalScroll />

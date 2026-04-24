@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-route
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/lib/auth";
 import { FloatingWhatsApp } from "@/components/site/FloatingWhatsApp";
+import { FloatingGetQuote } from "@/components/site/FloatingGetQuote";
 import HomePage from "@/pages/Home";
 import ServicesPage from "@/pages/Services";
 import CategoryDetailPage from "@/pages/CategoryDetail";
@@ -72,6 +73,7 @@ function PublicChrome() {
   return (
     <>
       <FloatingWhatsApp side="left" />
+      <FloatingGetQuote />
       <FloatingWhatsApp side="right" />
     </>
   );
