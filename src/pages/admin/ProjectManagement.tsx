@@ -3,7 +3,7 @@ import { ProjectsPanel } from "@/components/admin/projectmanagement";
 
 export default function ProjectManagementPage() {
   useEffect(() => {
-    document.title = "Projects — Brushly";
+    document.title = "PaintBrush";
   }, []);
 
   return (

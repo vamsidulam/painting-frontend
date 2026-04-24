@@ -54,8 +54,8 @@ export default function CategoryDetailPage() {
 
   useEffect(() => {
     document.title = category
-      ? `${category.name} — Brushly`
-      : "Category — Brushly";
+      ? `${category.name} — PaintBrush`
+      : "Category — PaintBrush";
   }, [category]);
 
   useEffect(() => {

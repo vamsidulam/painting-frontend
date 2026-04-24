@@ -37,7 +37,7 @@ const faqs: Faq[] = [
   },
   {
     q: "Are your painters vetted?",
-    a: "Every painter on Brushly passes a background check, a craftsmanship test, and carries insurance. We only partner with teams that meet our standards.",
+    a: "Every painter on PaintBrush passes a background check, a craftsmanship test, and carries insurance. We only partner with teams that meet our standards.",
   },
 ];
 
@@ -45,7 +45,7 @@ export default function HelpPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   useEffect(() => {
-    document.title = "Help & Support — Brushly";
+    document.title = "Help & Support — PaintBrush";
   }, []);
 
   return (
@@ -92,7 +92,7 @@ export default function HelpPage() {
               </p>
             </a>
             <a
-              href="mailto:hello@brushly.app"
+              href="mailto:hello@PaintBrush.app"
               className="group bg-card border border-border rounded-3xl p-6 shadow-card hover:shadow-glow transition-all duration-500 hover:-translate-y-1"
             >
               <div className="h-12 w-12 rounded-2xl gradient-primary grid place-items-center text-primary-foreground shadow-glow">
@@ -102,20 +102,10 @@ export default function HelpPage() {
                 Email us
               </h3>
               <p className="mt-1 text-sm text-muted-foreground">
-                hello@brushly.app · 24-hour response
+                hello@PaintBrush.app · 24-hour response
               </p>
             </a>
-            <div className="group bg-card border border-border rounded-3xl p-6 shadow-card hover:shadow-glow transition-all duration-500 hover:-translate-y-1">
-              <div className="h-12 w-12 rounded-2xl gradient-primary grid place-items-center text-primary-foreground shadow-glow">
-                <MessageCircle className="h-5 w-5" />
-              </div>
-              <h3 className="mt-4 font-display font-bold text-lg">
-                Live Chat
-              </h3>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Available once you've booked. Check your dashboard.
-              </p>
-            </div>
+            
           </div>
         </div>
       </section>
@@ -198,7 +188,7 @@ export default function HelpPage() {
               an hour during working hours.
             </p>
             <div className="mt-6 flex flex-wrap gap-3 justify-center">
-              <a href="mailto:hello@brushly.app">
+              <a href="mailto:hello@PaintBrush.app">
                 <Button className="rounded-2xl h-11 px-6">Email us</Button>
               </a>
               <Link to="/booking">

@@ -7,13 +7,13 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Brushly — Premium Painting Services On-Demand" },
+      { title: "PaintBrush — Premium Painting Services On-Demand" },
       {
         name: "description",
         content: "Book trusted, professional painters in minutes. Interior, exterior, commercial — affordable, fast and guaranteed.",
       },
-      { property: "og:title", content: "Brushly — Premium Painting Services On-Demand" },
-      { name: "twitter:title", content: "Brushly — Premium Painting Services On-Demand" },
+      { property: "og:title", content: "PaintBrush — Premium Painting Services On-Demand" },
+      { name: "twitter:title", content: "PaintBrush — Premium Painting Services On-Demand" },
       { name: "description", content: "Paint Perfect is a modern web application for booking professional painting services." },
       { property: "og:description", content: "Paint Perfect is a modern web application for booking professional painting services." },
       { name: "twitter:description", content: "Paint Perfect is a modern web application for booking professional painting services." },

@@ -114,7 +114,7 @@ export function OnboardAdminModal({ open, onOpenChange, onSuccess }: Props) {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="jane@brushly.com"
+                placeholder="jane@PaintBrush.com"
                 required
                 className="pl-10 h-11 rounded-xl"
               />

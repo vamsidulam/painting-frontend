@@ -12,7 +12,7 @@ export default function OverviewPage() {
   const { user } = useAuth();
 
   useEffect(() => {
-    document.title = "Dashboard — Brushly";
+    document.title = "PaintBrush";
   }, []);
 
   const firstName = (user?.name ?? "Admin").split(/\s+/)[0];

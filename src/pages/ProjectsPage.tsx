@@ -24,7 +24,7 @@ export default function ProjectsPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    document.title = "Projects — Brushly";
+    document.title = "Projects — PaintBrush";
   }, []);
 
   useEffect(() => {

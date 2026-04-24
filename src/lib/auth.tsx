@@ -33,7 +33,7 @@ type AuthContextValue = {
   isReady: boolean;
 };
 
-const USER_KEY = "brushly.admin.user";
+const USER_KEY = "paintbrush.admin.user";
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 

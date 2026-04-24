@@ -3,7 +3,7 @@ import { OrdersPanel } from "@/components/admin/ordermanagement";
 
 export default function OrdersPage() {
   useEffect(() => {
-    document.title = "Orders — Brushly";
+    document.title = "PaintBrush";
   }, []);
 
   return (

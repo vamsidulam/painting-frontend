@@ -7,7 +7,7 @@ import {
 
 export default function UserManagementPage() {
   useEffect(() => {
-    document.title = "User Management — Brushly";
+    document.title = "PaintBrush";
   }, []);
 
   return (

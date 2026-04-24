@@ -17,7 +17,7 @@ export default function AdminLoginPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    document.title = "Admin Login — Brushly";
+    document.title = "PaintBrush";
   }, []);
 
   useEffect(() => {
@@ -68,7 +68,7 @@ export default function AdminLoginPage() {
         </div>
 
         <div className="relative z-10 text-xs text-sidebar-foreground/60">
-          © {new Date().getFullYear()} Brushly. All rights reserved.
+          © {new Date().getFullYear()} PaintBrush. All rights reserved.
         </div>
       </div>
 
@@ -113,7 +113,7 @@ export default function AdminLoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@brushly.com"
+                  placeholder="admin@PaintBrush.com"
                   className="pl-10 h-11 rounded-xl"
                 />
               </div>

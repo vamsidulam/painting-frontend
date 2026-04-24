@@ -26,7 +26,7 @@ const featured = [
     role: "Interior Designer",
     avatar: "https://i.pravatar.cc/120?img=5",
     rating: 5,
-    text: "I recommend Brushly to all my clients. Their painters are precise, polite and treat every home like it's their own.",
+    text: "I recommend PaintBrush to all my clients. Their painters are precise, polite and treat every home like it's their own.",
   },
   {
     name: "Marcus Chen",
@@ -78,7 +78,7 @@ const wall = [
     role: "Boutique owner",
     avatar: "https://i.pravatar.cc/100?img=58",
     rating: 5,
-    text: "Clean finish, tidy site, on-time delivery. Will hire Brushly again for our next store.",
+    text: "Clean finish, tidy site, on-time delivery. Will hire PaintBrush again for our next store.",
   },
 ];
 
@@ -86,7 +86,7 @@ export default function ReviewsPage() {
   const [i, setI] = useState(0);
 
   useEffect(() => {
-    document.title = "Reviews — Brushly";
+    document.title = "PaintBrush";
   }, []);
 
   useEffect(() => {

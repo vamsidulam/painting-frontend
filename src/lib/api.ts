@@ -2,7 +2,7 @@ const BASE_URL =
   (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, "") ||
   "http://localhost:3000";
 
-const TOKEN_KEY = "brushly.admin.token";
+const TOKEN_KEY = "paintbrush.admin.token";
 
 export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);

@@ -16,7 +16,7 @@ export default function HomePage() {
   const [welcomeOpen, setWelcomeOpen] = useState(false);
 
   useEffect(() => {
-    document.title = "Brushly";
+    document.title = "PaintBrush";
     const id = setTimeout(() => setWelcomeOpen(true), 600);
     return () => clearTimeout(id);
   }, []);

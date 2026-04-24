@@ -6,7 +6,7 @@ import texture from "@/assets/texture-1.jpg";
 
 export default function ServicesPage() {
   useEffect(() => {
-    document.title = "Services — Brushly";
+    document.title = "PaintBrush";
   }, []);
 
   return (

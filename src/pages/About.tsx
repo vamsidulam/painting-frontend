@@ -46,7 +46,7 @@ const stats = [
 
 export default function AboutPage() {
   useEffect(() => {
-    document.title = "About — Brushly";
+    document.title = "About — PaintBrush";
   }, []);
 
   return (
@@ -76,7 +76,7 @@ export default function AboutPage() {
               <span className="text-gradient">tells a story.</span>
             </h1>
             <p className="mt-6 text-lg md:text-xl text-muted-foreground leading-relaxed">
-              Brushly started with a simple idea — finding a trustworthy
+              PaintBrush started with a simple idea — finding a trustworthy
               painter shouldn't be harder than picking a colour. We built a
               modern, transparent booking experience around the painters our
               families trust, and we're growing it one happy home at a time.

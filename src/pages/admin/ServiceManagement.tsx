@@ -24,7 +24,7 @@ export default function ServiceManagementPage() {
   const [createServiceOpen, setCreateServiceOpen] = useState(false);
 
   useEffect(() => {
-    document.title = "Services — Brushly";
+    document.title = "PaintBrush";
   }, []);
 
   return (

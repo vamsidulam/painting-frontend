@@ -5,7 +5,7 @@ export function CustomersTab() {
     <UsersPanel
       role="customer"
       title="Customers"
-      description="People who have booked a service through Brushly."
+      description="People who have booked a service through PaintBrush."
     />
   );
 }

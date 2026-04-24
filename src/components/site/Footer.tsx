@@ -108,7 +108,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 pt-6 border-t border-primary-foreground/10 flex flex-col md:flex-row justify-between gap-4 text-sm text-primary-foreground/60">
-          <p>© {new Date().getFullYear()} Brushly. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} PaintBrush. All rights reserved.</p>
           <div className="flex gap-6">
             <Link to="/help" className="hover:text-accent">
               Privacy

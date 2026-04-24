@@ -66,7 +66,7 @@ type BookingPrefill = {
 
 export default function BookingPage() {
   useEffect(() => {
-    document.title = "Book a Service — Brushly";
+    document.title = "PaintBrush";
   }, []);
 
   const location = useLocation();

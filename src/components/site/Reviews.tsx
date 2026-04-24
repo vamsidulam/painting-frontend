@@ -22,7 +22,7 @@ const reviews = [
     role: "Interior Designer",
     avatar: "https://i.pravatar.cc/100?img=5",
     rating: 5,
-    text: "I recommend Brushly to all my clients. Their painters are precise, polite and treat every home like it's their own.",
+    text: "I recommend PaintBrush to all my clients. Their painters are precise, polite and treat every home like it's their own.",
   },
   {
     name: "Marcus Chen",

@@ -79,8 +79,8 @@ export default function CategoryServicesPage() {
   useEffect(() => {
     document.title =
       category && meta
-        ? `${meta.title} — ${category.name} — Brushly`
-        : "Services — Brushly";
+        ? `${meta.title} — ${category.name} — PaintBrush`
+        : "Services — PaintBrush";
   }, [category, meta]);
 
   useEffect(() => {

@@ -48,7 +48,7 @@ export default function SetPasswordPage() {
   const [done, setDone] = useState(false);
 
   useEffect(() => {
-    document.title = "Set Password — Brushly";
+    document.title = "PaintBrush";
   }, []);
 
   useEffect(() => {
