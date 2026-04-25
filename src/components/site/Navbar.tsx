@@ -32,8 +32,8 @@ export function Navbar() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between rounded-2xl px-4 md:px-6 py-3 transition-all glass shadow-lg shadow-primary/10 ring-1 ring-black/5">
           <Link to="/" className="flex items-center gap-2 group shrink-0">
-            <div className="h-9 w-9 rounded-xl gradient-primary flex items-center justify-center shadow-glow group-hover:scale-110 transition-transform">
-              <PaintBucket className="h-5 w-5 text-primary-foreground" />
+            <div className="h-9 w-9 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <img src="logo.png" className="h-9 w-9 object-contain" />
             </div>
             <span className="font-display font-bold text-xl text-foreground">
               Paint<span className="text-accent">Brush</span>
