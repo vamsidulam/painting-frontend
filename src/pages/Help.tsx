@@ -88,11 +88,11 @@ export default function HelpPage() {
                 Call Support
               </h3>
               <p className="mt-1 text-sm text-muted-foreground">
-                +91 99999 99999 · Mon–Sun, 9am–9pm
+                +91 7899615463 · Mon–Sun, 9am–9pm
               </p>
             </a>
             <a
-              href="mailto:hello@PaintBrush.app"
+              href="alamjmhir91@gmail.com"
               className="group bg-card border border-border rounded-3xl p-6 shadow-card hover:shadow-glow transition-all duration-500 hover:-translate-y-1"
             >
               <div className="h-12 w-12 rounded-2xl gradient-primary grid place-items-center text-primary-foreground shadow-glow">
@@ -102,7 +102,7 @@ export default function HelpPage() {
                 Email us
               </h3>
               <p className="mt-1 text-sm text-muted-foreground">
-                hello@PaintBrush.app · 24-hour response
+                alamjmhir91@gmail.com · 24-hour response
               </p>
             </a>
             
