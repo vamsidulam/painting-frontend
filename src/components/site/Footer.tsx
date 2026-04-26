@@ -50,8 +50,8 @@ export function Footer() {
   return (
     <footer className="mt-24 bg-primary text-primary-foreground">
       <div className="container mx-auto px-4 py-16">
-        <div className="grid md:grid-cols-4 gap-10">
-          <div className="md:col-span-2">
+        <div className="grid md:grid-cols-12 gap-10">
+          <div className="md:col-span-4">
             <Link to="/" className="flex items-center gap-2 w-fit">
               <div className="h-10 w-10 rounded-xl gradient-accent flex items-center justify-center">
                 <PaintBucket className="h-5 w-5 text-accent-foreground" />
@@ -77,9 +77,9 @@ export function Footer() {
             </div>
           </div>
 
-          <div>
+          <div className="md:col-span-6">
             <h4 className="font-semibold mb-4">Services</h4>
-            <ul className="space-y-2 text-primary-foreground/70 text-sm">
+            <ul className="columns-2 sm:columns-3 lg:columns-4 gap-x-6 text-primary-foreground/70 text-sm [&>li]:mb-2 [&>li]:break-inside-avoid">
               {services.length === 0 ? (
                 <li>
                   <Link to="/services">Browse all</Link>
@@ -113,6 +113,7 @@ export function Footer() {
                           },
                         },
                       }}
+                      className="block truncate"
                     >
                       {s.name}
                     </Link>
@@ -122,7 +123,7 @@ export function Footer() {
             </ul>
           </div>
 
-          <div>
+          <div className="md:col-span-2">
             <h4 className="font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2 text-primary-foreground/70 text-sm">
               {quickLinks.map((q) => (
