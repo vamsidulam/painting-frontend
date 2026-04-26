@@ -103,6 +103,11 @@ export function CreateServiceModal({
     };
   }, [open, defaultCategoryId]);
 
+  const selectedCategory = categories.find((c) => c.id === categoryId) ?? null;
+  const categoryIncludesMoney = selectedCategory
+    ? selectedCategory.includesMoney
+    : true;
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
@@ -116,8 +121,11 @@ export function CreateServiceModal({
       return;
     }
 
-    const parsedCost = Number(cost);
-    if (!Number.isFinite(parsedCost) || parsedCost < 0) {
+    const parsedCost = categoryIncludesMoney ? Number(cost) : 0;
+    if (
+      categoryIncludesMoney &&
+      (!Number.isFinite(parsedCost) || parsedCost < 0)
+    ) {
       setError("Cost must be a non-negative number.");
       return;
     }
@@ -232,21 +240,23 @@ export function CreateServiceModal({
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="create-service-cost">Cost (₹)</Label>
-            <Input
-              id="create-service-cost"
-              type="number"
-              inputMode="numeric"
-              value={cost}
-              onChange={(e) => setCost(e.target.value)}
-              placeholder="20"
-              min={0}
-              step={1}
-              required
-              className="h-11 rounded-xl"
-            />
-          </div>
+          {categoryIncludesMoney && (
+            <div className="space-y-2">
+              <Label htmlFor="create-service-cost">Cost (₹)</Label>
+              <Input
+                id="create-service-cost"
+                type="number"
+                inputMode="numeric"
+                value={cost}
+                onChange={(e) => setCost(e.target.value)}
+                placeholder="20"
+                min={0}
+                step={1}
+                required
+                className="h-11 rounded-xl"
+              />
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="create-service-desc">Description</Label>

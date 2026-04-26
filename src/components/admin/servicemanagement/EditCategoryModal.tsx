@@ -31,6 +31,7 @@ type UpdateResponse = {
 export function EditCategoryModal({ category, onClose, onUpdated }: Props) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [includesMoney, setIncludesMoney] = useState(true);
   const [isActive, setIsActive] = useState(true);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [removeImage, setRemoveImage] = useState(false);
@@ -41,6 +42,7 @@ export function EditCategoryModal({ category, onClose, onUpdated }: Props) {
     if (category) {
       setName(category.name);
       setDescription(category.description ?? "");
+      setIncludesMoney(category.includesMoney ?? true);
       setIsActive(category.isActive);
       setImageFile(null);
       setRemoveImage(false);
@@ -69,6 +71,10 @@ export function EditCategoryModal({ category, onClose, onUpdated }: Props) {
     }
     if (trimmedDesc !== (category.description ?? "")) {
       form.set("description", trimmedDesc);
+      hasChange = true;
+    }
+    if (includesMoney !== (category.includesMoney ?? true)) {
+      form.set("includesMoney", String(includesMoney));
       hasChange = true;
     }
     if (isActive !== category.isActive) {
@@ -156,6 +162,21 @@ export function EditCategoryModal({ category, onClose, onUpdated }: Props) {
             removed={removeImage}
             onRemovedChange={setRemoveImage}
           />
+
+          <div className="flex items-center justify-between rounded-xl border border-border px-4 py-3">
+            <div>
+              <div className="text-sm font-medium">Includes money</div>
+              <div className="text-xs text-muted-foreground">
+                When off, services in this category have no cost and no
+                payment is collected at booking.
+              </div>
+            </div>
+            <Switch
+              checked={includesMoney}
+              onCheckedChange={setIncludesMoney}
+              disabled={submitting}
+            />
+          </div>
 
           <div className="flex items-center justify-between rounded-xl border border-border px-4 py-3">
             <div>

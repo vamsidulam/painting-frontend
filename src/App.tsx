@@ -72,7 +72,7 @@ function PublicChrome() {
   if (pathname.startsWith("/admin")) return null;
   return (
     <>
-      <FloatingWhatsApp side="left" />
+     
       <FloatingGetQuote />
       <FloatingWhatsApp side="right" />
     </>

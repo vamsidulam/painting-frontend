@@ -3,6 +3,7 @@ export type ServiceCategory = {
   name: string;
   description: string;
   image: string;
+  includesMoney?: boolean;
 };
 
 export type PropertyType = "apartment" | "villa" | "building" | "office";
@@ -23,6 +24,7 @@ export type BookingService = {
   workType?: WorkType;
   categoryId?: string;
   categoryName?: string;
+  categoryIncludesMoney?: boolean;
 };
 
 export type BookingAddress = {

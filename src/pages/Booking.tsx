@@ -98,7 +98,10 @@ export default function BookingPage() {
   const progress = ((step + 1) / TOTAL_STEPS) * 100;
   const current = STEPS[step];
   const sqftNumber = Number(sqft) || 0;
-  const total = service ? sqftNumber * service.cost : 0;
+  const includesMoney =
+    (category?.includesMoney ?? service?.categoryIncludesMoney ?? true) !==
+    false;
+  const total = includesMoney && service ? sqftNumber * service.cost : 0;
 
   const goNextStep = () => setStep((s) => Math.min(TOTAL_STEPS - 1, s + 1));
   const goBack = () => setStep((s) => Math.max(0, s - 1));
@@ -319,9 +322,11 @@ export default function BookingPage() {
                       sqft={sqftNumber}
                       address={address}
                       orderId={orderId}
+                      includesMoney={includesMoney}
                       onBookSlot={() => setBookSlotOpen(true)}
                       onPayNow={() => goNextStep()}
                       onContinuePayment={() => goNextStep()}
+                      onFinish={() => setSubmitted(true)}
                     />
                   )}
 

@@ -18,9 +18,11 @@ type Props = {
   sqft: number;
   address: BookingAddress;
   orderId: string | null;
+  includesMoney: boolean;
   onBookSlot: () => void;
   onPayNow: () => void;
   onContinuePayment: () => void;
+  onFinish: () => void;
 };
 
 function capitalize(s: string) {
@@ -35,9 +37,11 @@ export function SummaryStep({
   sqft,
   address,
   orderId,
+  includesMoney,
   onBookSlot,
   onPayNow,
   onContinuePayment,
+  onFinish,
 }: Props) {
   if (orderId) {
     return (
@@ -51,17 +55,29 @@ export function SummaryStep({
         <p className="mt-2 text-sm text-muted-foreground">
           Our agent will reach out to you shortly on the number you provided.
         </p>
-        <Button
-          type="button"
-          onClick={onContinuePayment}
-          className="mt-6 h-11 rounded-xl px-6 font-semibold"
-        >
-          <CreditCard className="mr-2 h-4 w-4" />
-          Continue to payment
-        </Button>
-        <div className="mt-2 text-[11px] text-muted-foreground">
-          Optional — pay later if you prefer.
-        </div>
+        {includesMoney ? (
+          <>
+            <Button
+              type="button"
+              onClick={onContinuePayment}
+              className="mt-6 h-11 rounded-xl px-6 font-semibold"
+            >
+              <CreditCard className="mr-2 h-4 w-4" />
+              Continue to payment
+            </Button>
+            <div className="mt-2 text-[11px] text-muted-foreground">
+              Optional — pay later if you prefer.
+            </div>
+          </>
+        ) : (
+          <Button
+            type="button"
+            onClick={onFinish}
+            className="mt-6 h-11 rounded-xl px-6 font-semibold"
+          >
+            Done
+          </Button>
+        )}
       </div>
     );
   }
@@ -80,18 +96,33 @@ export function SummaryStep({
 
   return (
     <div>
-      <div className="text-center">
-        <div className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium">
-          <Sparkles className="h-3.5 w-3.5" />
-          Instant estimate
+      {includesMoney ? (
+        <div className="text-center">
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium">
+            <Sparkles className="h-3.5 w-3.5" />
+            Instant estimate
+          </div>
+          <div className="mt-4 font-display font-bold text-4xl md:text-6xl text-gradient">
+            {formatRupees(total)}
+          </div>
+          <div className="text-muted-foreground mt-1.5 text-xs">
+            {sqft.toLocaleString()} sqft × {formatRupees(service.cost)} / sqft
+          </div>
         </div>
-        <div className="mt-4 font-display font-bold text-4xl md:text-6xl text-gradient">
-          {formatRupees(total)}
+      ) : (
+        <div className="text-center">
+          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-full px-3 py-1 text-xs font-medium">
+            <Sparkles className="h-3.5 w-3.5" />
+            Booking summary
+          </div>
+          <div className="mt-3 font-display font-bold text-2xl md:text-3xl text-foreground">
+            {service.name}
+          </div>
+          <div className="text-muted-foreground mt-1.5 text-xs">
+            Our agent will share details after confirming your slot.
+          </div>
         </div>
-        <div className="text-muted-foreground mt-1.5 text-xs">
-          {sqft.toLocaleString()} sqft × {formatRupees(service.cost)} / sqft
-        </div>
-      </div>
+      )}
 
       <div className="mt-8 space-y-0">
         <Row label="Service" value={`${service.name} · ${category.name}`} />
@@ -101,24 +132,30 @@ export function SummaryStep({
         <Row label="Location" value={formattedAddress || "—"} />
       </div>
 
-      <div className="mt-8 grid sm:grid-cols-2 gap-3">
+      <div
+        className={`mt-8 grid gap-3 ${
+          includesMoney ? "sm:grid-cols-2" : "sm:grid-cols-1"
+        }`}
+      >
         <Button
           type="button"
-          variant="outline"
+          variant={includesMoney ? "outline" : "default"}
           onClick={onBookSlot}
           className="h-12 rounded-xl font-semibold"
         >
           <CalendarClock className="mr-2 h-4 w-4" />
           Book slot
         </Button>
-        <Button
-          type="button"
-          onClick={onPayNow}
-          className="h-12 rounded-xl font-semibold"
-        >
-          <CreditCard className="mr-2 h-4 w-4" />
-          Pay now
-        </Button>
+        {includesMoney && (
+          <Button
+            type="button"
+            onClick={onPayNow}
+            className="h-12 rounded-xl font-semibold"
+          >
+            <CreditCard className="mr-2 h-4 w-4" />
+            Pay now
+          </Button>
+        )}
       </div>
     </div>
   );

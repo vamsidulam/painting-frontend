@@ -3,14 +3,22 @@ import { PaintBucket, Instagram, Twitter, Facebook } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api } from "@/lib/api";
 
-type PublicCategory = {
+type PublicService = {
   id: string;
   name: string;
+  cost: number;
+  description: string;
+  image: string;
+  workType: "fresh" | "repainting";
+  category: string;
+  categoryId: string;
+  categoryName: string;
+  categoryIncludesMoney?: boolean;
 };
 
-type CategoriesResponse = {
+type ServicesResponse = {
   success: boolean;
-  data: { categories: PublicCategory[] };
+  data: { services: PublicService[] };
 };
 
 const quickLinks = [
@@ -23,16 +31,16 @@ const quickLinks = [
 ];
 
 export function Footer() {
-  const [categories, setCategories] = useState<PublicCategory[]>([]);
+  const [services, setServices] = useState<PublicService[]>([]);
 
   useEffect(() => {
     let cancelled = false;
-    api<CategoriesResponse>("/services/categories", { auth: false })
+    api<ServicesResponse>("/services", { auth: false })
       .then((res) => {
-        if (!cancelled) setCategories(res.data.categories);
+        if (!cancelled) setServices(res.data.services);
       })
       .catch(() => {
-        if (!cancelled) setCategories([]);
+        if (!cancelled) setServices([]);
       });
     return () => {
       cancelled = true;
@@ -49,7 +57,7 @@ export function Footer() {
                 <PaintBucket className="h-5 w-5 text-accent-foreground" />
               </div>
               <span className="font-display font-bold text-2xl">
-                Brush<span className="text-accent-glow">ly</span>
+                PaintBrush
               </span>
             </Link>
             <p className="mt-4 max-w-md text-primary-foreground/70 leading-relaxed">
@@ -72,20 +80,41 @@ export function Footer() {
           <div>
             <h4 className="font-semibold mb-4">Services</h4>
             <ul className="space-y-2 text-primary-foreground/70 text-sm">
-              {categories.length === 0 ? (
+              {services.length === 0 ? (
                 <li>
-                  <Link to="/services" className="hover:text-accent">
-                    Browse all
-                  </Link>
+                  <Link to="/services">Browse all</Link>
                 </li>
               ) : (
-                categories.map((c) => (
-                  <li key={c.id}>
+                services.map((s) => (
+                  <li key={s.id}>
                     <Link
-                      to={`/categories/${c.id}`}
-                      className="hover:text-accent"
+                      to="/booking"
+                      state={{
+                        prefill: {
+                          category: {
+                            id: s.categoryId,
+                            name: s.categoryName,
+                            description: "",
+                            image: "",
+                            includesMoney: s.categoryIncludesMoney ?? true,
+                          },
+                          workType: s.workType,
+                          service: {
+                            id: s.id,
+                            name: s.name,
+                            cost: s.cost,
+                            description: s.description,
+                            image: s.image,
+                            workType: s.workType,
+                            categoryId: s.categoryId,
+                            categoryName: s.categoryName,
+                            categoryIncludesMoney:
+                              s.categoryIncludesMoney ?? true,
+                          },
+                        },
+                      }}
                     >
-                      {c.name}
+                      {s.name}
                     </Link>
                   </li>
                 ))
@@ -98,9 +127,7 @@ export function Footer() {
             <ul className="space-y-2 text-primary-foreground/70 text-sm">
               {quickLinks.map((q) => (
                 <li key={q.to}>
-                  <Link to={q.to} className="hover:text-accent">
-                    {q.label}
-                  </Link>
+                  <Link to={q.to}>{q.label}</Link>
                 </li>
               ))}
             </ul>
@@ -110,12 +137,8 @@ export function Footer() {
         <div className="mt-12 pt-6 border-t border-primary-foreground/10 flex flex-col md:flex-row justify-between gap-4 text-sm text-primary-foreground/60">
           <p>© {new Date().getFullYear()} PaintBrush. All rights reserved.</p>
           <div className="flex gap-6">
-            <Link to="/help" className="hover:text-accent">
-              Privacy
-            </Link>
-            <Link to="/help" className="hover:text-accent">
-              Terms
-            </Link>
+            <Link to="/help">Privacy</Link>
+            <Link to="/help">Terms</Link>
           </div>
         </div>
       </div>

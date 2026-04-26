@@ -85,15 +85,23 @@ export function EditServiceModal({ service, onClose, onUpdated }: Props) {
     };
   }, [service]);
 
+  const selectedCategory = categories.find((c) => c.id === categoryId) ?? null;
+  const categoryIncludesMoney = selectedCategory
+    ? selectedCategory.includesMoney
+    : (service?.category?.includesMoney ?? true);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!service) return;
 
     const trimmedName = name.trim();
     const trimmedDesc = description.trim();
-    const parsedCost = Number(cost);
+    const parsedCost = categoryIncludesMoney ? Number(cost) : 0;
 
-    if (!Number.isFinite(parsedCost) || parsedCost < 0) {
+    if (
+      categoryIncludesMoney &&
+      (!Number.isFinite(parsedCost) || parsedCost < 0)
+    ) {
       setError("Cost must be a non-negative number.");
       return;
     }
@@ -228,21 +236,23 @@ export function EditServiceModal({ service, onClose, onUpdated }: Props) {
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="edit-service-cost">Cost (₹)</Label>
-            <Input
-              id="edit-service-cost"
-              type="number"
-              inputMode="numeric"
-              value={cost}
-              onChange={(e) => setCost(e.target.value)}
-              placeholder="20"
-              min={0}
-              step={1}
-              required
-              className="h-11 rounded-xl"
-            />
-          </div>
+          {categoryIncludesMoney && (
+            <div className="space-y-2">
+              <Label htmlFor="edit-service-cost">Cost (₹)</Label>
+              <Input
+                id="edit-service-cost"
+                type="number"
+                inputMode="numeric"
+                value={cost}
+                onChange={(e) => setCost(e.target.value)}
+                placeholder="20"
+                min={0}
+                step={1}
+                required
+                className="h-11 rounded-xl"
+              />
+            </div>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="edit-service-desc">Description</Label>

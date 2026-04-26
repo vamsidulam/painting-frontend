@@ -35,6 +35,7 @@ export function CreateCategoryModal({
 }: Props) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [includesMoney, setIncludesMoney] = useState(true);
   const [isActive, setIsActive] = useState(true);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -45,6 +46,7 @@ export function CreateCategoryModal({
       const id = setTimeout(() => {
         setName("");
         setDescription("");
+        setIncludesMoney(true);
         setIsActive(true);
         setImageFile(null);
         setError(null);
@@ -67,6 +69,7 @@ export function CreateCategoryModal({
       const form = new FormData();
       form.set("name", trimmed);
       form.set("description", description.trim());
+      form.set("includesMoney", String(includesMoney));
       form.set("isActive", String(isActive));
       if (imageFile) form.set("image", imageFile);
 
@@ -134,6 +137,21 @@ export function CreateCategoryModal({
             file={imageFile}
             onFileChange={setImageFile}
           />
+
+          <div className="flex items-center justify-between rounded-xl border border-border px-4 py-3">
+            <div>
+              <div className="text-sm font-medium">Includes money</div>
+              <div className="text-xs text-muted-foreground">
+                When off, services in this category have no cost and no
+                payment is collected at booking.
+              </div>
+            </div>
+            <Switch
+              checked={includesMoney}
+              onCheckedChange={setIncludesMoney}
+              disabled={submitting}
+            />
+          </div>
 
           <div className="flex items-center justify-between rounded-xl border border-border px-4 py-3">
             <div>

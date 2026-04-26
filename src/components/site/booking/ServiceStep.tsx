@@ -25,6 +25,7 @@ type ApiService = {
   category: string;
   categoryId: string;
   categoryName: string;
+  categoryIncludesMoney?: boolean;
 };
 
 type ListResponse = {
@@ -110,6 +111,8 @@ export function ServiceStep({ category, workType, value, onChange }: Props) {
                 workType: s.workType,
                 categoryId: s.categoryId || category.id,
                 categoryName: s.categoryName || category.name,
+                categoryIncludesMoney:
+                  s.categoryIncludesMoney ?? category.includesMoney ?? true,
               })
             }
             className={`group overflow-hidden rounded-xl border-2 text-left transition-all flex flex-col ${
@@ -146,12 +149,14 @@ export function ServiceStep({ category, workType, value, onChange }: Props) {
                   {s.description}
                 </p>
               )}
-              <div className="mt-auto text-primary font-semibold text-sm whitespace-nowrap">
-                {formatRupees(s.cost)}
-                <span className="text-muted-foreground font-normal text-[10px] ml-1">
-                  /sqft
-                </span>
-              </div>
+              {category.includesMoney !== false && (
+                <div className="mt-auto text-primary font-semibold text-sm whitespace-nowrap">
+                  {formatRupees(s.cost)}
+                  <span className="text-muted-foreground font-normal text-[10px] ml-1">
+                    /sqft
+                  </span>
+                </div>
+              )}
             </div>
           </button>
         );

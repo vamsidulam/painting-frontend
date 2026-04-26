@@ -13,6 +13,7 @@ type PublicCategory = {
   name: string;
   description: string;
   image: string;
+  includesMoney?: boolean;
 };
 
 type PublicService = {
@@ -25,6 +26,7 @@ type PublicService = {
   category: string;
   categoryId: string;
   categoryName: string;
+  categoryIncludesMoney?: boolean;
 };
 
 type CategoriesResponse = {
@@ -226,7 +228,12 @@ export default function CategoryServicesPage() {
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {services.map((s, i) => (
-                  <ServiceCard key={s.id} service={s} index={i} />
+                  <ServiceCard
+                    key={s.id}
+                    service={s}
+                    index={i}
+                    category={category}
+                  />
                 ))}
               </div>
             )}
@@ -242,10 +249,14 @@ export default function CategoryServicesPage() {
 function ServiceCard({
   service,
   index,
+  category,
 }: {
   service: PublicService;
   index: number;
+  category: PublicCategory | null;
 }) {
+  const includesMoney =
+    service.categoryIncludesMoney ?? category?.includesMoney ?? true;
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -281,13 +292,19 @@ function ServiceCard({
           )}
         </div>
 
-        <div className="mt-auto flex items-center justify-between gap-2">
-          <div className="font-semibold text-primary text-sm whitespace-nowrap">
-            {formatRupees(service.cost)}
-            <span className="text-muted-foreground font-normal text-[10px] ml-1">
-              /sqft
-            </span>
-          </div>
+        <div
+          className={`mt-auto flex items-center gap-2 ${
+            includesMoney ? "justify-between" : "justify-end"
+          }`}
+        >
+          {includesMoney && (
+            <div className="font-semibold text-primary text-sm whitespace-nowrap">
+              {formatRupees(service.cost)}
+              <span className="text-muted-foreground font-normal text-[10px] ml-1">
+                /sqft
+              </span>
+            </div>
+          )}
           <Link
             to="/booking"
             state={{
@@ -297,6 +314,7 @@ function ServiceCard({
                   name: service.categoryName,
                   description: "",
                   image: "",
+                  includesMoney,
                 },
                 workType: service.workType,
                 service: {
@@ -308,6 +326,7 @@ function ServiceCard({
                   workType: service.workType,
                   categoryId: service.categoryId,
                   categoryName: service.categoryName,
+                  categoryIncludesMoney: includesMoney,
                 },
               },
             }}

@@ -3,6 +3,7 @@ export type ServiceCategoryRecord = {
   name: string;
   description: string;
   image: string;
+  includesMoney: boolean;
   isActive: boolean;
   createdBy?: string | null;
   updatedBy?: string | null;
@@ -35,6 +36,7 @@ export type ServiceRecord = {
     name: string;
     image?: string;
     description?: string;
+    includesMoney?: boolean;
   } | null;
   createdAt?: string;
   updatedAt?: string;

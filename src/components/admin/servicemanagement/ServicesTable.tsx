@@ -104,7 +104,9 @@ export function ServicesTable({
                     </span>
                   </td>
                   <td className="px-6 py-4 text-foreground font-semibold whitespace-nowrap">
-                    {formatCurrency(s.cost)}
+                    {s.category?.includesMoney === false
+                      ? "—"
+                      : formatCurrency(s.cost)}
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="inline-flex gap-2">
