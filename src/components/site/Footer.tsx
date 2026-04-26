@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PaintBucket, Instagram, Twitter, Facebook } from "lucide-react";
+import { Instagram, Twitter, Facebook } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api } from "@/lib/api";
 
@@ -53,9 +53,11 @@ export function Footer() {
         <div className="grid md:grid-cols-12 gap-10">
           <div className="md:col-span-4">
             <Link to="/" className="flex items-center gap-2 w-fit">
-              <div className="h-10 w-10 rounded-xl gradient-accent flex items-center justify-center">
-                <PaintBucket className="h-5 w-5 text-accent-foreground" />
-              </div>
+              <img
+                src="/logo.png"
+                alt="PaintBrush logo"
+                className="h-10 w-10 rounded-xl object-cover"
+              />
               <span className="font-display font-bold text-2xl">
                 PaintBrush
               </span>
