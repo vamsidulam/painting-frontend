@@ -1,2 +1,2 @@
 export const QR_IMAGE_DATA_URL =
-  "https://res-console.cloudinary.com/dso1dpawx/thumbnails/transform/v1/image/upload/Y19maWxsLGhfMjAwLHdfMjAw/v1/V2hhdHNBcHBfSW1hZ2VfMjAyNi0wNC0yNl9hdF8yLjEwLjA4X1BNX3h2bm16dg==/template_primary";
+  "https://res.cloudinary.com/dso1dpawx/image/upload/v1777194402/WhatsApp_Image_2026-04-26_at_2.10.08_PM_xvnmzv.jpg";

@@ -138,7 +138,7 @@ export function PaymentStep({
           <img
             src={QR_IMAGE_DATA_URL}
             alt="PhonePe QR code"
-            className="h-40 w-40"
+            className="h-64 w-64 object-cover rounded-lg"
             draggable={false}
           />
         </div>

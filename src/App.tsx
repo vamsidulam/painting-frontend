@@ -3,6 +3,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/lib/auth";
 import { FloatingWhatsApp } from "@/components/site/FloatingWhatsApp";
 import { FloatingGetQuote } from "@/components/site/FloatingGetQuote";
+import { FloatingPhone } from "@/components/site/FloatingPhone";
 import HomePage from "@/pages/Home";
 import ServicesPage from "@/pages/Services";
 import CategoryDetailPage from "@/pages/CategoryDetail";
@@ -74,6 +75,7 @@ function PublicChrome() {
     <>
      
       <FloatingGetQuote />
+      <FloatingPhone side="right" />
       <FloatingWhatsApp side="right" />
     </>
   );
