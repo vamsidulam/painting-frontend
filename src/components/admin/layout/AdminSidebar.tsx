@@ -4,7 +4,6 @@ import {
   FolderKanban,
   LayoutDashboard,
   ListOrdered,
-  PaintBucket,
   LogOut,
   User as UserIcon,
   Users,
@@ -40,11 +39,15 @@ export function AdminSidebar() {
   return (
     <aside className="hidden md:flex w-64 shrink-0 bg-sidebar text-sidebar-foreground flex-col p-6 h-full">
       <Link to="/" className="flex items-center gap-2 shrink-0">
-        <div className="h-10 w-10 rounded-xl gradient-accent flex items-center justify-center">
-          <PaintBucket className="h-5 w-5 text-accent-foreground" />
+        <div className="h-10 w-10 rounded-xl overflow-hidden flex items-center justify-center bg-white">
+          <img
+            src="/logo.png"
+            alt="PaintBrush logo"
+            className="h-full w-full object-contain"
+          />
         </div>
         <span className="font-display font-bold text-xl">
-          Brush<span className="text-accent">ly</span>
+          PaintBrush
         </span>
       </Link>
 
