@@ -67,15 +67,21 @@ export function Footer() {
               transparent pricing, and finishes that turn heads.
             </p>
             <div className="flex gap-3 mt-6">
-              {[Instagram, Twitter, Facebook].map((Icon, i) => (
-                <a
-                  key={i}
-                  href="#"
+              
+              <a
+                  key='1'
+                  href="https://www.instagram.com/paintbrush_in?igsh=MWp3NW1pYWF6NzhuNw=="
                   className="h-10 w-10 rounded-xl glass-dark flex items-center justify-center hover:scale-110 transition-transform"
                 >
-                  <Icon className="h-4 w-4" />
+                  <Instagram className="h-4 w-4" />
                 </a>
-              ))}
+                <a
+                  key='2'
+                  href="https://www.facebook.com/profile.php?id=61588967722553&ref=PROFILE_EDIT_xav_ig_profile_page_web#"
+                  className="h-10 w-10 rounded-xl glass-dark flex items-center justify-center hover:scale-110 transition-transform"
+                >
+                  <Facebook className="h-4 w-4" />
+                </a>
             </div>
           </div>
 

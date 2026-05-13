@@ -45,11 +45,11 @@ export default function AdminLoginPage() {
         <div className="absolute -bottom-32 -left-20 h-96 w-96 rounded-full bg-primary opacity-20 blur-3xl" />
 
         <Link to="/" className="flex items-center gap-2 relative z-10">
-          <div className="h-11 w-11 rounded-xl gradient-accent flex items-center justify-center">
-            <PaintBucket className="h-5 w-5 text-accent-foreground" />
-          </div>
+           <div className="h-9 w-9 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <img src="logo.png" className="h-9 w-9 object-contain" />
+            </div>
           <span className="font-display font-bold text-2xl">
-            Brush<span className="text-accent">ly</span>
+            PaintBrush
           </span>
         </Link>
 
@@ -80,11 +80,11 @@ export default function AdminLoginPage() {
         >
           <div className="lg:hidden mb-8">
             <Link to="/" className="flex items-center gap-2">
-              <div className="h-10 w-10 rounded-xl gradient-accent flex items-center justify-center">
-                <PaintBucket className="h-5 w-5 text-accent-foreground" />
-              </div>
+               <div className="h-9 w-9 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <img src="logo.png" className="h-9 w-9 object-contain" />
+            </div>
               <span className="font-display font-bold text-xl">
-                Brush<span className="text-accent">ly</span>
+                PaintBrush
               </span>
             </Link>
           </div>
