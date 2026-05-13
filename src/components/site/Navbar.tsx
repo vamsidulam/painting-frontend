@@ -33,7 +33,7 @@ export function Navbar() {
         <div className="flex items-center justify-between rounded-2xl px-4 md:px-6 py-3 transition-all glass shadow-lg shadow-primary/10 ring-1 ring-black/5">
           <Link to="/" className="flex items-center gap-2 group shrink-0">
             <div className="h-9 w-9 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <img src="logo.png" className="h-9 w-9 object-contain" />
+              <img src="/logo.png" className="h-9 w-9 object-contain" />
             </div>
             <span className="font-display font-bold text-xl text-foreground">
               Paint<span className="text-accent">Brush</span>

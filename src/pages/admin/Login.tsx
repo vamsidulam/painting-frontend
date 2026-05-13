@@ -46,7 +46,7 @@ export default function AdminLoginPage() {
 
         <Link to="/" className="flex items-center gap-2 relative z-10">
            <div className="h-9 w-9 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <img src="logo.png" className="h-9 w-9 object-contain" />
+              <img src="/logo.png" className="h-9 w-9 object-contain" />
             </div>
           <span className="font-display font-bold text-2xl">
             PaintBrush
@@ -81,7 +81,7 @@ export default function AdminLoginPage() {
           <div className="lg:hidden mb-8">
             <Link to="/" className="flex items-center gap-2">
                <div className="h-9 w-9 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <img src="logo.png" className="h-9 w-9 object-contain" />
+              <img src="/logo.png" className="h-9 w-9 object-contain" />
             </div>
               <span className="font-display font-bold text-xl">
                 PaintBrush
