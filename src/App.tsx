@@ -22,13 +22,15 @@ import UserManagementPage from "@/pages/admin/UserManagement";
 import ServiceManagementPage from "@/pages/admin/ServiceManagement";
 import ProjectManagementPage from "@/pages/admin/ProjectManagement";
 import { AdminLayout, ProtectedRoute } from "@/components/admin/layout";
+import Newone from "./pages/Newone";
 
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path='/' element={<Newone />} />
+          {/* <Route path="/" element={<HomePage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/categories/:categoryId" element={<CategoryDetailPage />} />
           <Route
@@ -59,7 +61,7 @@ export default function App() {
 
           <Route path="/dashboard" element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="/404" element={<NotFoundPage />} />
-          <Route path="*" element={<Navigate to="/404" replace />} />
+          <Route path="*" element={<Navigate to="/404" replace />} /> */}
         </Routes>
         <PublicChrome />
         <Toaster richColors position="top-right" />
@@ -74,9 +76,9 @@ function PublicChrome() {
   return (
     <>
      
-      <FloatingGetQuote />
+      {/* <FloatingGetQuote />
       <FloatingPhone side="right" />
-      <FloatingWhatsApp side="right" />
+      <FloatingWhatsApp side="right" /> */}
     </>
   );
 }
